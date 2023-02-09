@@ -7,11 +7,6 @@ Class {
 	#name : #FASTFortranGenerator,
 	#superclass : #FASTMetamodelGenerator,
 	#instVars : [
-		'fortranAssignementExpression',
-		'tWithAssigneable',
-		'tAssigneable',
-		'tFortranExpression',
-		'tWithFortranExpression',
 		'addition',
 		'subtraction',
 		'multiplication',
@@ -112,7 +107,6 @@ Class {
 		'tFortranNotExecutableStatement',
 		'fortranStatementFunction',
 		'fortranStatementPragma',
-		'tFortranProcedure',
 		'fortranConstant',
 		'fortranConstantArithmetic',
 		'fortranConstantCharacter',
@@ -120,10 +114,16 @@ Class {
 		'fortranConstantComplex',
 		'tWithSymbolicName',
 		'fortranArray',
-		'fortranStructure',
-		'fortranRecord',
 		'fortranRecordField',
-		'fortranSubstring'
+		'fortranSubstring',
+		'fortranProgram',
+		'fortranProgramUnit',
+		'fortranMainProgram',
+		'fortranComment',
+		'fortranArrayDimensionDeclarator',
+		'fortranExpression',
+		'fortranSubprogram',
+		'fortranProcedure'
 	],
 	#category : #'FAST-Fortran-Generator'
 }
@@ -160,13 +160,15 @@ FASTFortranGenerator >> defineClasses [
 
 	super defineClasses.
 
+	self famixTempClasses.
+	
 	self defineStatements.
 	self defineTypes.
 	self defineExpressions.
 	self defineDataItems.
 
 	"from FAST"
-	entity := self remoteEntity: #Entity withPrefix: #FAST
+	"entity := self remoteEntity: #Entity withPrefix: #FAST"
 ]
 
 { #category : #'private - definition' }
@@ -225,6 +227,7 @@ FASTFortranGenerator >> defineConstants [
 { #category : #definition }
 FASTFortranGenerator >> defineDataItems [
 
+	"A variable is a symbolic name paired with a storage location"
 	fortranVariable := builder
 		                   newClassNamed: #Variable
 		                   comment: 'I represent Fortran Variable'.
@@ -232,6 +235,10 @@ FASTFortranGenerator >> defineDataItems [
 	fortranArray := builder
 		                newClassNamed: #Array
 		                comment: 'I represent Fortran Array'.
+	fortranArrayDimensionDeclarator := builder
+		                newClassNamed: #ArrayDimensionDeclarator
+		                comment: 'I represent Fortran Array dimension declaration'.
+
 
 	fortranSubstring := builder
 		                    newClassNamed: #Substring
@@ -320,7 +327,10 @@ FASTFortranGenerator >> defineExpressions [
 
 	"Expressions"
 
-	expression := self remoteEntity: #Expression withPrefix: #FAST.
+	fortranExpression := builder
+		                     newClassNamed: #FortranExpression
+		                     comment: self commentForExpression.
+
 	fortranArithmeticTypeExpression := builder
 		                                   newClassNamed:
 		                                   #ArithmeticTypeExpression
@@ -343,14 +353,26 @@ FASTFortranGenerator >> defineHierarchy [
 
 	super defineHierarchy.
 	
+	"fortran program units"
+	fortranMainProgram --|> fortranProgramUnit.
+	fortranSubprogram --|> fortranProgramUnit. 
+	
+	"fortran subprograms"
+	fortranProcedure --|> fortranSubprogram.
+	fortranStatementBlockData --|> fortranSubprogram.
+	
+	"fortran procedures"
+	fortranStatementFunction --|> fortranProcedure.
+	fortranStatementSoubroutine --|> fortranProcedure.
+	
 	"can have symbolic name. 
 	TODO: Not sure if it is inheritance or composition (depends if symbolic name was already declared)
 	TODO: not fully populated"
 	
 	fortranVariable --|> tWithSymbolicName. 
 	fortranArray --|> tWithSymbolicName.
-	fortranStructure --|> tWithSymbolicName.
-	fortranRecord --|> tWithSymbolicName.
+	fortranStatementStructure --|> tWithSymbolicName.
+	fortranStatementRecord --|> tWithSymbolicName.
 	fortranRecordField --|> tWithSymbolicName.
 	fortranStatementBlockData --|> tWithSymbolicName.
 	fortranStatementSoubroutine --|> tWithSymbolicName.
@@ -363,10 +385,6 @@ FASTFortranGenerator >> defineHierarchy [
 	fortranConstantLogical --|> fortranConstant. 
 	fortranConstantCharacter --|> fortranConstant.
 	fortranConstantComplex --|> fortranConstantArithmetic.
-	
-	"fortran procedures"
-	fortranStatementFunction --|> tFortranProcedure.
-	fortranStatementSoubroutine --|> tFortranProcedure.
 	
 	"fortran executable statements"
 	fortranStatementAccept --|> tFortranExecutableStatement. 
@@ -454,21 +472,51 @@ FASTFortranGenerator >> defineHierarchy [
 FASTFortranGenerator >> defineProperties [
 	super defineProperties.
 	
+	(fortranStatement property: #label type: #String) comment: 'Determines the statement label which consists of 1 to 5 digits, with at least one nonzero'.
+	
+	
 	"constants"
 	(fortranConstant property: #type type: #String) comment: 'Determines the constant type'.
 	(fortranConstant property: #value type: #String) comment: 'Determines the constant value'.
 	(fortranConstantArithmetic property: #isTyped type: #Boolean) comment: 'Determines if the constant typed or typeless'.
 	(fortranConstantArithmetic property: #isSigned type: #Boolean) comment: 'Determines if the constant signed or not'.
-	(fortranConstantArithmetic property: #sign type: #Integer) comment: 'Determines the arithmetic constant sign'.
+	(fortranConstantArithmetic property: #sign type: #Number) comment: 'Determines the arithmetic constant sign'.
 	
+	"variables"
+	(fortranVariable property: #name type: #String) comment: 'Determines the variable name'.
+	(fortranVariable property: #type type: #String) comment: 'Determines the variable type'.
+	(fortranVariable property: #value type: #String) comment: 'Determines the variable value'.
+	(fortranVariable property: #defined type: #Boolean) comment: 'Determines if the variableis defined (stores a value)'.
+	
+	"arrays"
+	(fortranArray property: #name type: #String) comment: 'Determines the array name'.	
+	(fortranArray property: #name type: #String) comment: 'Determines the array name'.
+	(fortranArray property: #dimensions type: #String) comment: 'Determines the array dimensions'.
+	(fortranArrayDimensionDeclarator property: #dl type: #Number) comment: 'Determines the array dimension declaration lower bound'.
+	(fortranArrayDimensionDeclarator property: #du type: #Number) comment: 'Determines the array dimension declaration upper bound'.
 ]
 
 { #category : #definition }
 FASTFortranGenerator >> defineRelations [
 
 	super defineRelations.
+	
+	"A program consists of one or more program units"
+	((fortranProgram property: #name) comment:
+		 'Program name')
+	<>-*
+		((fortranProgramUnit property: #parentProgramName) comment:
+			 'Name of the parent program').
+			
+	"A program unit is a sequence of statements, terminated by an END statement."
+	((fortranProgramUnit property: #statements) comment:
+		 'Statements of the PU ')
+	<>-*
+		((fortranStatement property: #parentUnitName) comment:
+			 'Name of the parent unit').		
 
-	((fortranAssignementExpression property: #expression) comment:
+	"expressions"
+	"((fortranAssignementExpression property: #expression) comment:
 		 'Expression that is being assigned upon declaration to the var')
 	<>-
 		((expression property: #fortranAssignementExpressionOwner) comment:
@@ -481,16 +529,15 @@ FASTFortranGenerator >> defineRelations [
 	
 ((tWithFortranExpression property: #variable) comment: 'My variable')
 	<>- ((tFortranExpression property: #fortranVariableAssignementOwner) comment:
-			 'The owner of the modifier').
+			 'The owner of the modifier')."
 ]
 
 { #category : #'private - definition' }
 FASTFortranGenerator >> defineStatements [
 
-	"fortranStatementBlock := builder newClassNamed: #StatementBlock comment: 'I represent Fortran statement block'.
-	--> not sure if it is the same entity as block data, need to inquire"
+	"A statement consists of zero or more key words, symbolic names, literal constants, statement labels, operators, and special characters."
 
-	fortranStatement := self remoteEntity: #Statement withPrefix: #FAST.
+	fortranStatement := builder newClassNamed: #FortranStatement.
 
 	fortranStatementAccept := builder
 		                          newClassNamed: #StatementAccept
@@ -540,7 +587,7 @@ FASTFortranGenerator >> defineStatements [
 		                          comment:
 		                          'I represent Fortran Encode statement'.
 	fortranStatementDimension := builder
-		                             newClassNamed: #Statement
+		                             newClassNamed: #StatementDimension
 		                             comment:
 		                             'I represent FortranDimension statement'.
 	fortranStatementDo := builder
@@ -745,12 +792,6 @@ FASTFortranGenerator >> defineTraits [
 		                             #TFortranWithSymbolicName
 		                             comment:
 		                             'I can have a symbolic name'.
-	
-	tFortranProcedure := builder
-		                             newTraitNamed:
-		                             #TFortranProcedure
-		                             comment:
-		                             'I represent a fortran subroutine or a function'.
 
 	tFortranTerminalStatement := builder
 		                             newTraitNamed:
@@ -798,4 +839,43 @@ FASTFortranGenerator >> defineTypes [
 	
 
 	
+]
+
+{ #category : #definition }
+FASTFortranGenerator >> famixTempClasses [
+
+	"these calsses are most probably will be loaded from the famix"
+
+	fortranProgram := builder
+		                  newClassNamed: #Program
+		                  comment:
+		                  'A fortran program consists of one or more program units.'.
+
+
+	fortranProgramUnit := builder
+		                      newClassNamed: #ProgramUnit
+		                      comment:
+		                      'A fortran program unit is a sequence of statements, terminated by an END statement. Every program unit is either a main program or a subprogram. If a program is to be executable, it must have a main program'.
+
+
+	fortranMainProgram := builder
+		                      newClassNamed: #MainProgram
+		                      comment:
+		                      'A fortran main program. If a program is to be executable, it must have a main program'.
+
+	fortranComment := builder
+		                  newClassNamed: #Comment
+		                  comment: 'A fortran comment'.
+
+
+	fortranSubprogram := builder
+		                     newClassNamed: #Subprogram
+		                     comment:
+		                     'I represent a fortran subprogram: procedure or block data'.
+
+
+	fortranProcedure := builder
+		                    newClassNamed: #Procedure
+		                    comment:
+		                    'I represent a fortran subroutine or a function'
 ]
