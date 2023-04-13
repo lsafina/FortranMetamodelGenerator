@@ -1,5 +1,5 @@
 "
-Generate entities in the Fast-Fortran-Entities package.
+Generate entities in the Fast-Fortran-Model package.
 
 Uses generate method of the parent FamixMetamodelGenerator class
 "
@@ -123,7 +123,8 @@ Class {
 		'fortranArrayDimensionDeclarator',
 		'fortranExpression',
 		'fortranSubprogram',
-		'fortranProcedure'
+		'fortranProcedure',
+		'tFortranTypedStatement'
 	],
 	#category : #'FAST-Fortran-Generator'
 }
@@ -140,7 +141,7 @@ FASTFortranGenerator class >> generate [
 { #category : #accessing }
 FASTFortranGenerator class >> packageName [
 
-	^ #'FAST-Fortran-Model'
+	^ #'FAST-Fortran-Entities'
 ]
 
 { #category : #accessing }
@@ -470,50 +471,91 @@ FASTFortranGenerator >> defineHierarchy [
 
 { #category : #definition }
 FASTFortranGenerator >> defineProperties [
+
 	super defineProperties.
-	
-	(fortranStatement property: #label type: #String) comment: 'Determines the statement label which consists of 1 to 5 digits, with at least one nonzero'.
-	
-	
+
+	(fortranStatement property: #label type: #String) comment:
+		'Determines the statement label which consists of 1 to 5 digits, with at least one nonzero'.
+
+
 	"constants"
-	(fortranConstant property: #type type: #String) comment: 'Determines the constant type'.
-	(fortranConstant property: #value type: #String) comment: 'Determines the constant value'.
-	(fortranConstantArithmetic property: #isTyped type: #Boolean) comment: 'Determines if the constant typed or typeless'.
-	(fortranConstantArithmetic property: #isSigned type: #Boolean) comment: 'Determines if the constant signed or not'.
-	(fortranConstantArithmetic property: #sign type: #Number) comment: 'Determines the arithmetic constant sign'.
-	
+	(fortranConstant property: #type type: #String) comment:
+		'Determines the constant type'.
+	(fortranConstant property: #value type: #String) comment:
+		'Determines the constant value'.
+	(fortranConstantArithmetic property: #isTyped type: #Boolean) 
+		comment: 'Determines if the constant typed or typeless'.
+	(fortranConstantArithmetic property: #isSigned type: #Boolean) 
+		comment: 'Determines if the constant signed or not'.
+	(fortranConstantArithmetic property: #sign type: #Number) comment:
+		'Determines the arithmetic constant sign'.
+
 	"variables"
-	(fortranVariable property: #name type: #String) comment: 'Determines the variable name'.
-	(fortranVariable property: #type type: #String) comment: 'Determines the variable type'.
-	(fortranVariable property: #value type: #String) comment: 'Determines the variable value'.
-	(fortranVariable property: #defined type: #Boolean) comment: 'Determines if the variableis defined (stores a value)'.
-	
+	(fortranVariable property: #name type: #String) comment:
+		'Determines the variable name'.
+	(fortranVariable property: #type type: #String) comment:
+		'Determines the variable type'.
+	(fortranVariable property: #value type: #String) comment:
+		'Determines the variable value'.
+	(fortranVariable property: #defined type: #Boolean) comment:
+		'Determines if the variableis defined (stores a value)'.
+
 	"arrays"
-	(fortranArray property: #name type: #String) comment: 'Determines the array name'.	
-	(fortranArray property: #name type: #String) comment: 'Determines the array name'.
-	(fortranArray property: #dimensions type: #String) comment: 'Determines the array dimensions'.
-	(fortranArrayDimensionDeclarator property: #dl type: #Number) comment: 'Determines the array dimension declaration lower bound'.
-	(fortranArrayDimensionDeclarator property: #du type: #Number) comment: 'Determines the array dimension declaration upper bound'.
+	(fortranArray property: #name type: #String) comment:
+		'Determines the array name'.
+	(fortranArray property: #name type: #String) comment:
+		'Determines the array name'.
+	(fortranArray property: #dimensions type: #String) comment:
+		'Determines the array dimensions'.
+	(fortranArrayDimensionDeclarator property: #dl type: #Number) 
+		comment: 'Determines the array dimension declaration lower bound'.
+	(fortranArrayDimensionDeclarator property: #du type: #Number) 
+		comment: 'Determines the array dimension declaration upper bound'.
+
+	"subroutine"
+	(fortranStatementSoubroutine property: #name type: #String) comment:
+		'Determines the subroutine name'.
 ]
 
 { #category : #definition }
 FASTFortranGenerator >> defineRelations [
 
 	super defineRelations.
-	
+
 	"A program consists of one or more program units"
-	((fortranProgram property: #name) comment:
-		 'Program name')
-	<>-*
-		((fortranProgramUnit property: #parentProgramName) comment:
+	((fortranProgram property: #name) comment: 'Program name')
+	<>-* ((fortranProgramUnit property: #parentProgramName) comment:
 			 'Name of the parent program').
-			
+
 	"A program unit is a sequence of statements, terminated by an END statement."
 	((fortranProgramUnit property: #statements) comment:
 		 'Statements of the PU ')
-	<>-*
-		((fortranStatement property: #parentUnitName) comment:
-			 'Name of the parent unit').		
+	<>-* ((fortranStatement property: #parentUnitName) comment:
+			 'Name of the parent unit').
+
+
+	"subrutine"
+	(fortranStatementSoubroutine property: #variables type: #String) 
+		comment:
+			'Determines the subroutine variables. Can be a variable name, array name, record name, or dummy procedure name (also an asterisk, or an ampersand in the extended standard)'
+			<>-* ((fortranVariable property: #soubroutine) comment:
+					 'Link to the parent soubroutine').
+					
+					(fortranStatementSoubroutine property: #variables type: #String) 
+		comment:
+			'Determines the subroutine variables. Can be a variable name, array name, record name, or dummy procedure name (also an asterisk, or an ampersand in the extended standard)'
+			<>-* ((fortranArray property: #soubroutine) comment:
+					 'Link to the parent soubroutine').
+					
+					(fortranStatementSoubroutine property: #variables type: #String) 
+		comment:
+			'Determines the subroutine variables. Can be a variable name, array name, record name, or dummy procedure name (also an asterisk, or an ampersand in the extended standard)'
+			<>-* ((fortranStatementRecord property: #soubroutine) comment:
+					 'Link to the parent soubroutine')
+					
+					
+
+
 
 	"expressions"
 	"((fortranAssignementExpression property: #expression) comment:
@@ -786,12 +828,10 @@ FASTFortranGenerator >> defineStatements [
 FASTFortranGenerator >> defineTraits [
 
 	super defineTraits.
-	
+
 	tWithSymbolicName := builder
-		                             newTraitNamed:
-		                             #TFortranWithSymbolicName
-		                             comment:
-		                             'I can have a symbolic name'.
+		                     newTraitNamed: #TFortranWithSymbolicName
+		                     comment: 'I can have a symbolic name'.
 
 	tFortranTerminalStatement := builder
 		                             newTraitNamed:
@@ -815,8 +855,12 @@ FASTFortranGenerator >> defineTraits [
 		                               newTraitNamed:
 		                               #TFortranNotStandardFeatures
 		                               comment: '
-		I represent "Non-standard" or "Extension" feature which go beyond versions compatible with the ANSI X3.9-1978 FORTRAN standard and the corresponding International Organization for Standardization (ISO) 1539-1980, FIPS 69-1, BS 6832, and MIL-STD-1753 ( Floating-point arithmetic for both compilers is based on IEEE standard 754-1985, and international standard IEC 60559:1989); on SPARC platforms, both compilers provide support for the optimization-exploiting features of SPARC V8, and SPARC V9, including the UltraSPARC(TM) implementation. These features are defined in the SPARC Architecture Manuals, Version 8 (ISBN 0-13-825001-4), and Version 9 (ISBN 0-13-099227-5), published by Prentice-Hall for SPARC International.'
+		I represent "Non-standard" or "Extension" feature which go beyond versions compatible with the ANSI X3.9-1978 FORTRAN standard and the corresponding International Organization for Standardization (ISO) 1539-1980, FIPS 69-1, BS 6832, and MIL-STD-1753 ( Floating-point arithmetic for both compilers is based on IEEE standard 754-1985, and international standard IEC 60559:1989); on SPARC platforms, both compilers provide support for the optimization-exploiting features of SPARC V8, and SPARC V9, including the UltraSPARC(TM) implementation. These features are defined in the SPARC Architecture Manuals, Version 8 (ISBN 0-13-825001-4), and Version 9 (ISBN 0-13-099227-5), published by Prentice-Hall for SPARC International.'.
 
+	tFortranTypedStatement := builder
+		                          newTraitNamed: #TFortranTypedStatement
+		                          comment: '
+		I usually represent a type of any constant (except for specifically typeless constants), constant expression, variable, array, array element, substring, or function'
 	"
 	tFortranExpression := builder
 		                newTraitNamed: #TFortranExpression
