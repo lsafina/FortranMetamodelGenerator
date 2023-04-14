@@ -93,7 +93,6 @@ Class {
 		'fortranStatementStatic',
 		'fortranStatementStop',
 		'fortranStatementStructure',
-		'fortranStatementSoubroutine',
 		'fortranStatementType',
 		'fortranStatementUnion',
 		'fortranStatementVirtual',
@@ -116,15 +115,14 @@ Class {
 		'fortranArray',
 		'fortranRecordField',
 		'fortranSubstring',
-		'fortranProgram',
 		'fortranProgramUnit',
-		'fortranMainProgram',
 		'fortranComment',
 		'fortranArrayDimensionDeclarator',
 		'fortranExpression',
 		'fortranSubprogram',
 		'fortranProcedure',
-		'tFortranTypedStatement'
+		'tFortranTypedStatement',
+		'fortranStatementSubroutine'
 	],
 	#category : #'FAST-Fortran-Generator'
 }
@@ -355,7 +353,7 @@ FASTFortranGenerator >> defineHierarchy [
 	super defineHierarchy.
 	
 	"fortran program units"
-	fortranMainProgram --|> fortranProgramUnit.
+	fortranStatementProgram --|> fortranProgramUnit.
 	fortranSubprogram --|> fortranProgramUnit. 
 	
 	"fortran subprograms"
@@ -364,7 +362,7 @@ FASTFortranGenerator >> defineHierarchy [
 	
 	"fortran procedures"
 	fortranStatementFunction --|> fortranProcedure.
-	fortranStatementSoubroutine --|> fortranProcedure.
+	fortranStatementSubroutine --|> fortranProcedure.
 	
 	"can have symbolic name. 
 	TODO: Not sure if it is inheritance or composition (depends if symbolic name was already declared)
@@ -376,7 +374,7 @@ FASTFortranGenerator >> defineHierarchy [
 	fortranStatementRecord --|> tWithSymbolicName.
 	fortranRecordField --|> tWithSymbolicName.
 	fortranStatementBlockData --|> tWithSymbolicName.
-	fortranStatementSoubroutine --|> tWithSymbolicName.
+	fortranStatementSubroutine --|> tWithSymbolicName.
 	fortranStatementFunction --|> tWithSymbolicName.
 	fortranStatementEntry --|> tWithSymbolicName.
 	fortranStatementNameList --|> tWithSymbolicName.
@@ -457,7 +455,7 @@ FASTFortranGenerator >> defineHierarchy [
 	fortranStatementRecord --|> tFortranNotExecutableStatement.	
 	fortranStatementSave --|> tFortranNotExecutableStatement.	
 	fortranStatementStructure --|> tFortranNotExecutableStatement.	
-	fortranStatementSoubroutine --|> tFortranNotExecutableStatement.	
+	fortranStatementSubroutine --|> tFortranNotExecutableStatement.	
 	fortranStatementType --|> tFortranNotExecutableStatement.	
 	fortranStatementUnion --|> tFortranNotExecutableStatement.	
 	fortranStatementVirtual --|> tFortranNotExecutableStatement.	
@@ -473,6 +471,15 @@ FASTFortranGenerator >> defineHierarchy [
 FASTFortranGenerator >> defineProperties [
 
 	super defineProperties.
+	
+	(fortranStatementProgram property: #name type: #String) comment:
+		'Symbolic name of the main program'.
+	
+	(fortranStatementSubroutine property: #name type: #String) comment:
+		'Name of subroutine subprogram'.
+
+	(fortranStatementBlockData property: #name type: #String) comment:
+		'Symbolic name of the block data subprogram in which the BLOCK DATA statement appears. This parameter is optional. It is a global name.'.
 
 	(fortranStatement property: #label type: #String) comment:
 		'Determines the statement label which consists of 1 to 5 digits, with at least one nonzero'.
@@ -513,7 +520,7 @@ FASTFortranGenerator >> defineProperties [
 		comment: 'Determines the array dimension declaration upper bound'.
 
 	"subroutine"
-	(fortranStatementSoubroutine property: #name type: #String) comment:
+	(fortranStatementSubroutine property: #name type: #String) comment:
 		'Determines the subroutine name'.
 ]
 
@@ -521,11 +528,6 @@ FASTFortranGenerator >> defineProperties [
 FASTFortranGenerator >> defineRelations [
 
 	super defineRelations.
-
-	"A program consists of one or more program units"
-	((fortranProgram property: #name) comment: 'Program name')
-	<>-* ((fortranProgramUnit property: #parentProgramName) comment:
-			 'Name of the parent program').
 
 	"A program unit is a sequence of statements, terminated by an END statement."
 	((fortranProgramUnit property: #statements) comment:
@@ -535,28 +537,13 @@ FASTFortranGenerator >> defineRelations [
 
 
 	"subrutine"
-	(fortranStatementSoubroutine property: #variables type: #String) 
+	((fortranStatementSubroutine property: #variables type: #String) 
 		comment:
-			'Determines the subroutine variables. Can be a variable name, array name, record name, or dummy procedure name (also an asterisk, or an ampersand in the extended standard)'
-			<>-* ((fortranVariable property: #soubroutine) comment:
-					 'Link to the parent soubroutine').
-					
-					(fortranStatementSoubroutine property: #variables type: #String) 
-		comment:
-			'Determines the subroutine variables. Can be a variable name, array name, record name, or dummy procedure name (also an asterisk, or an ampersand in the extended standard)'
-			<>-* ((fortranArray property: #soubroutine) comment:
-					 'Link to the parent soubroutine').
-					
-					(fortranStatementSoubroutine property: #variables type: #String) 
-		comment:
-			'Determines the subroutine variables. Can be a variable name, array name, record name, or dummy procedure name (also an asterisk, or an ampersand in the extended standard)'
-			<>-* ((fortranStatementRecord property: #soubroutine) comment:
-					 'Link to the parent soubroutine')
+			'Determines the subroutine variables. Can be a variable name, array name, record name, or dummy procedure name (also an asterisk, or an ampersand in the extended standard)')
+			<>-* ((fortranVariable property: #subroutine) comment:
+					 'Link to the parent subroutine').
 					
 					
-
-
-
 	"expressions"
 	"((fortranAssignementExpression property: #expression) comment:
 		 'Expression that is being assigned upon declaration to the var')
@@ -600,7 +587,7 @@ FASTFortranGenerator >> defineStatements [
 	fortranStatementBlockData := builder
 		                             newClassNamed: #StatementBlockData
 		                             comment:
-		                             'I represent Fortran BlockData statement'.
+		                             'The BLOCK DATA statement identifies a subprogram that initializes variables and arrays in labeled common blocks.'.
 	fortranStatementCall := builder
 		                        newClassNamed: #StatementCall
 		                        comment:
@@ -774,10 +761,12 @@ FASTFortranGenerator >> defineStatements [
 		                         newClassNamed: #StatementPrint
 		                         comment:
 		                         'I represent Fortran Print statement'.
+	
 	fortranStatementProgram := builder
-		                           newClassNamed: #StatementProgram
-		                           comment:
-		                           'I represent Fortran Program statement'.
+		                          newClassNamed: #StatementProgram
+		                          comment:
+		                          'The PROGRAM statement identifies the program unit as a main program'.
+	
 	fortranStatementRead := builder
 		                        newClassNamed: #StatementRead
 		                        comment:
@@ -794,10 +783,10 @@ FASTFortranGenerator >> defineStatements [
 		                        newClassNamed: #StatementSave
 		                        comment:
 		                        'I represent Fortran Save statement'.
-	fortranStatementSoubroutine := builder
-		                               newClassNamed: #StatementSoubroutine
-		                               comment:
-		                               'I represent Fortran Soubroutine statement'.
+	fortranStatementSubroutine := builder
+		                              newClassNamed: #StatementSubroutine
+		                              comment:
+		                              'The SUBROUTINE statement identifies a named program unit as a subroutine, and specifies arguments for it'.
 	fortranStatementStatic := builder
 		                          newClassNamed: #StatementStatic
 		                          comment:
@@ -890,22 +879,10 @@ FASTFortranGenerator >> famixTempClasses [
 
 	"these calsses are most probably will be loaded from the famix"
 
-	fortranProgram := builder
-		                  newClassNamed: #Program
-		                  comment:
-		                  'A fortran program consists of one or more program units.'.
-
-
 	fortranProgramUnit := builder
 		                      newClassNamed: #ProgramUnit
 		                      comment:
 		                      'A fortran program unit is a sequence of statements, terminated by an END statement. Every program unit is either a main program or a subprogram. If a program is to be executable, it must have a main program'.
-
-
-	fortranMainProgram := builder
-		                      newClassNamed: #MainProgram
-		                      comment:
-		                      'A fortran main program. If a program is to be executable, it must have a main program'.
 
 	fortranComment := builder
 		                  newClassNamed: #Comment
