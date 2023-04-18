@@ -463,7 +463,15 @@ FASTFortranGenerator >> defineHierarchy [
 	
 	"fortran non-standard features"
 	fortranStatementByte --|> tFortranNotStandardFeatures.	
-	fortranStatementDoubleComplex --|> tFortranNotStandardFeatures.	
+	fortranStatementDoubleComplex --|> tFortranNotStandardFeatures.
+	
+	fortranStatementSubroutine --|> tWithArguments.
+	fortranStatementSubroutine --|> tWithParameters.  	
+
+	fortranVariable --|> tParameter. 
+	fortranArray --|> tParameter.
+	fortranRecordField --|> tParameter.
+	"TODO subroutine parameter can also be a dummy procedure name, an asterisk, or an ampersand "	
 
 ]
 
@@ -522,6 +530,15 @@ FASTFortranGenerator >> defineProperties [
 	"subroutine"
 	(fortranStatementSubroutine property: #name type: #String) comment:
 		'Determines the subroutine name'.
+		
+	(fortranComment property: #content type: #String) comment:
+		'Determines a content of a comment'.
+		
+	(fortranStatementExternal property: #name type: #String) comment:
+		'Name of external procedure, dummy procedure, or block data routine. '.
+		
+	(fortranStatementWrite property: #format type: #String) comment:
+		'Format identifier. '.
 ]
 
 { #category : #definition }
@@ -536,12 +553,12 @@ FASTFortranGenerator >> defineRelations [
 			 'Name of the parent unit').
 
 
-	"subrutine"
+	"""subrutine""
 	((fortranStatementSubroutine property: #variables type: #String) 
 		comment:
-			'Determines the subroutine variables. Can be a variable name, array name, record name, or dummy procedure name (also an asterisk, or an ampersand in the extended standard)')
+			'')
 			<>-* ((fortranVariable property: #subroutine) comment:
-					 'Link to the parent subroutine').
+					 'Link to the parent subroutine')."
 					
 					
 	"expressions"
@@ -787,6 +804,7 @@ FASTFortranGenerator >> defineStatements [
 		                              newClassNamed: #StatementSubroutine
 		                              comment:
 		                              'The SUBROUTINE statement identifies a named program unit as a subroutine, and specifies arguments for it'.
+	
 	fortranStatementStatic := builder
 		                          newClassNamed: #StatementStatic
 		                          comment:
