@@ -7,122 +7,93 @@ Class {
 	#name : #FASTFortranGenerator,
 	#superclass : #FASTMetamodelGenerator,
 	#instVars : [
-		'addition',
-		'subtraction',
-		'multiplication',
-		'division',
-		'exponentiation',
-		'concatenation',
-		'gt',
-		'gte',
-		'lt',
-		'lte',
-		'eq',
-		'xOr',
-		'and',
-		'equivalent',
-		'notEquivalent',
-		'binCustom',
-		'ne',
-		'or',
-		'fortranArithmeticTypeExpression',
-		'fortranCharacterTypeExpression',
-		'fortranLogicalTypeExpression',
-		'fortranVariable',
-		'fortranLoopControlExpression',
-		'fortranStatementAccept',
-		'fortranStatementAssign',
-		'fortranStatementAutomatic',
-		'fortranStatementBackspace',
-		'fortranStatementBlockData',
-		'fortranStatementByte',
-		'fortranStatementCall',
-		'fortranStatementCharacter',
-		'fortranStatementClose',
-		'fortranStatementCommon',
-		'fortranStatementComplex',
-		'fortranStatementContinue',
-		'fortranStatementData',
-		'fortranStatementDecode',
-		'fortranStatementEncode',
-		'fortranStatementDimension',
-		'fortranStatementDo',
-		'fortranStatementDoWhile',
-		'fortranStatementDoubleComplex',
-		'fortranStatementDoublePrecision',
-		'fortranStatementElse',
-		'fortranStatementElseIf',
-		'fortranStatementEnd',
-		'fortranStatementEndDo',
-		'fortranStatementEndFile',
-		'fortranStatementEndIf',
-		'fortranStatementEndMap',
-		'fortranStatementEndStructure',
-		'fortranStatementEndUnion',
-		'fortranStatementEntry',
-		'fortranStatementEquivalence',
-		'fortranStatementExternal',
-		'fortranStatementFormat',
-		'fortranStatementGoToAssigned',
-		'fortranStatementGoToComputed',
-		'fortranStatementGoToUnconditional',
-		'fortranStatementIfArithmetic',
-		'fortranStatementIfBlock',
-		'fortranStatementIfLogical',
-		'fortranStatementImplicit',
-		'fortranStatementInclude',
-		'fortranStatementInquire',
-		'fortranStatementInteger',
-		'fortranStatementIntrinsic',
-		'fortranStatementLogical',
-		'fortranStatementMap',
-		'fortranStatementNameList',
-		'fortranStatementOpen',
-		'fortranStatementOptions',
-		'fortranStatementParameter',
-		'fortranStatementPause',
-		'fortranStatementPointer',
-		'fortranStatementPrint',
-		'fortranStatementProgram',
-		'fortranStatementRead',
-		'fortranStatementReal',
-		'fortranStatementRecord',
-		'fortranStatementReturn',
-		'fortranStatementRewind',
-		'fortranStatementSave',
-		'fortranStatementStatic',
-		'fortranStatementStop',
-		'fortranStatementStructure',
-		'fortranStatementType',
-		'fortranStatementUnion',
-		'fortranStatementVirtual',
-		'fortranStatementVolatile',
-		'fortranStatementWrite',
-		'fortranStatement',
-		'tFortranTerminalStatement',
-		'tFortranNotStandardFeatures',
-		'tFortranExecutableStatement',
-		'fortranStatementGoTo',
-		'tFortranNotExecutableStatement',
-		'fortranStatementFunction',
-		'fortranStatementPragma',
-		'fortranConstant',
-		'fortranConstantArithmetic',
-		'fortranConstantCharacter',
-		'fortranConstantLogical',
-		'fortranConstantComplex',
-		'tWithSymbolicName',
-		'fortranArray',
-		'fortranRecordField',
-		'fortranSubstring',
-		'fortranProgramUnit',
-		'fortranComment',
-		'fortranArrayDimensionDeclarator',
-		'fortranExpression',
-		'fortranSubprogram',
-		'fortranProcedure',
-		'tFortranTypedStatement',
-		'fortranStatementSubroutine'
+		'programUnit',
+		'comment',
+		'procedure',
+		'subprogram',
+		'blockData',
+		'function',
+		'mainprogram',
+		'subroutine',
+		'acceptStatement',
+		'assignStatement',
+		'assignmentStatement',
+		'automaticStatement',
+		'backspaceStatement',
+		'callStatement',
+		'closeStatement',
+		'commonStatement',
+		'continueStatement',
+		'dataStatement',
+		'decodeStatement',
+		'encodeStatement',
+		'dimensionStatement',
+		'doStatement',
+		'doWhileStatement',
+		'elseStatement',
+		'elseIfStatement',
+		'endStatement',
+		'endDoStatement',
+		'endFileStatement',
+		'endIfStatement',
+		'endMapStatement',
+		'endStructureStatement',
+		'endUnionStatement',
+		'entryStatement',
+		'equivalenceStatement',
+		'externalStatement',
+		'formatStatement',
+		'goToStatement',
+		'goToAssignedStatement',
+		'goToComputed',
+		'goToUnconditional',
+		'ifArithmeticStatement',
+		'ifBlockStatement',
+		'ifLogicalStatement',
+		'implicitStatement',
+		'includeStatement',
+		'inquireStatement',
+		'intrinsicStatement',
+		'mapStatement',
+		'nameListStatement',
+		'openStatement',
+		'optionsStatement',
+		'parameterStatement',
+		'pauseStatement',
+		'pragmaStatement',
+		'printStatement',
+		'readStatement',
+		'rewindStatement',
+		'saveStatement',
+		'staticStatement',
+		'stopStatement',
+		'unionStatement',
+		'virtualStatement',
+		'volatileStatement',
+		'writeStatement',
+		'arithmeticExpression',
+		'characterExpression',
+		'logicalExpression',
+		'loopControlExpression',
+		'array',
+		'arrayDimensionDeclarator',
+		'substring',
+		'pointer',
+		'record',
+		'recordField',
+		'structure',
+		'arithmeticConstant',
+		'complexConstant',
+		'type',
+		'byteType',
+		'characterType',
+		'complexType',
+		'doubleComplexType',
+		'doublePrecisionType',
+		'integerType',
+		'logicalType',
+		'realType',
+		'exitStatement'
 	],
 	#category : #'FAST-Fortran-Generator'
 }
@@ -158,424 +129,432 @@ FASTFortranGenerator class >> submetamodels [
 FASTFortranGenerator >> defineClasses [
 
 	super defineClasses.
-
-	self famixTempClasses.
 	
-	self defineStatements.
-	self defineTypes.
-	self defineExpressions.
-	self defineDataItems.
+	"FAMIX-level classes (might be removed later)"
+	programUnit := builder
+		               newClassNamed: #ProgramUnit
+		               comment:
+		               'A fortran program unit is a sequence of statements, terminated by an END statement. Every program unit is either a main program or a subprogram. If a program is to be executable, it must have a main program'.
 
-	"from FAST"
-	"entity := self remoteEntity: #Entity withPrefix: #FAST"
+	comment := builder
+		           newClassNamed: #Comment
+		           comment: 'A fortran comment'.
+
+
+	subprogram := builder
+		              newClassNamed: #Subprogram
+		              comment:
+		              'I represent a fortran subprogram: procedure or block data'.
+
+	mainprogram := builder
+		               newClassNamed: #ProgramMain
+		               comment:
+		               'The PROGRAM statement identifies the program unit as a main program. program. For the loader, the main program is always named MAIN. The PROGRAM statement serves only the person who reads the program'.
+
+
+	procedure := builder
+		             newClassNamed: #Procedure
+		             comment:
+		             'I represent a fortran subroutine or a function'.
+
+	function := builder
+		            newClassNamed: #Function
+		            comment: 'I represent a Fortran Function'.
+
+	subroutine := builder
+		              newClassNamed: #Subroutine
+		              comment:
+		              'The SUBROUTINE statement identifies a subprogram, a named program unit as a subroutine, and specifies arguments for it'.
+
+	blockData := builder
+		             newClassNamed: #BlockData
+		             comment:
+		             'The BLOCK DATA statement identifies a subprogram that initializes variables and arrays in labeled common blocks.'.
+
+	self defineStatements.
+	self defineData.
+	
+	"From FAST"
+	"entity := self remoteEntity: #Entity withPrefix: #FAST.
+	expression := self remoteEntity: #Expression withPrefix: #FAST. 
+	statement := self remoteEntity: #Statement withPrefix: #FAST.
+	
+	literal := self remoteEntity: #Literal withPrefix: #FAST.
+	characterLiteral := self remoteEntity: #CharacterLiteral withPrefix: #FAST.
+	nullPointerLiteral := self remoteEntity: #NullPointerLiteral withPrefix: #FAST.
+	stringLiteral := self remoteEntity: #StringLiteral withPrefix: #FAST.
+	
+	variableExpression := self remoteEntity: #VariableExpression withPrefix: #FAST.
+	variableEntity := self remoteEntity: #VariableEntity withPrefix: #FAST. 
+	
+	namedBehaviouralEntity := self remoteEntity: #NamedBehaviouralEntity withPrefix: #FAST.
+	scopableEntity := self remoteEntity: #ScopableEntity withPrefix: #FAST.
+	namedEntity := self remoteEntity: #NamedEntity withPrefix: #FAST. 
+	
+	statementBlock := self remoteEntity: #StatementBlock withPrefix: #FAST.
+	expressionStatement := self remoteEntity: #ExpressionStatement withPrefix: #FAST.
+	returnStatement  := self remoteEntity: #ReturnStatement withPrefix: #FAST.
+	
+	fastTParameter := self remoteTrait: #TParameter withPrefix: #FAST. 
+	fastTWithParameters := self remoteTrait: #TWithParameters withPrefix: #FAST."
 ]
 
 { #category : #'private - definition' }
-FASTFortranGenerator >> defineClassesBinariesOps [
-	addition := builder newClassNamed: #Addition.
-	subtraction := builder newClassNamed: #Subtraction.
-	multiplication := builder newClassNamed: #Multiplication.
-	division := builder newClassNamed: #Division.
-	exponentiation := builder newClassNamed: #Exponentiation.
-	concatenation := builder newClassNamed: #Concatenation.
-	gt := builder newClassNamed: #GT.
-	gte := builder newClassNamed: #GTE.
-	lt := builder newClassNamed: #LT.
-	lte := builder newClassNamed: #LTE.
-	eq := builder newClassNamed: #EQ.
-	ne := builder newClassNamed: #NE.
-	or := builder newClassNamed: #Or.
-	xOr := builder newClassNamed: #XOr.
-	and := builder newClassNamed: #And.
-	equivalent := builder newClassNamed: #Equivalent.
-	notEquivalent := builder newClassNamed: #NotEquivalent.
-	binCustom := builder newClassNamed: #BinCustom.
+FASTFortranGenerator >> defineData [
 
-]
+	"EXPRESSIONS"
 
-{ #category : #definition }
-FASTFortranGenerator >> defineConstants [
+	arithmeticExpression := builder
+		                        newClassNamed: #ArithmeticExpression
+		                        comment: self commentForExpression.
+	characterExpression := builder
+		                       newClassNamed: #CharacterExpression
+		                       comment: self commentForExpression.
+	logicalExpression := builder
+		                     newClassNamed: #LogicalExpression
+		                     comment: self commentForExpression.
 
-	"A literal constant is a datum whose value cannot change throughout the program unit. The form of the string representing a constant determines the value and data type of the constant. (For a named constant, defined by a PARAMETER statement, the name defines the data type.)There are three general kinds of constants: Arithmetic, Logical, Character"
+	loopControlExpression := builder
+		                         newClassNamed: #LoopControlExpression
+		                         comment: self commentForExpression.
 
-	fortranConstant := builder
-		                   newClassNamed: #Constant
-		                   comment: 'I represent Fortran Constant statement'.
 
-	fortranConstantArithmetic := builder
-		                             newClassNamed: #ConstantArithmetic
-		                             comment:
-		                             'I represent Fortran Arithmetic Constant statement'.
+	"OTHER DATA TYPES"
 
-	fortranConstantCharacter := builder
-		                            newClassNamed: #ConstantCharacter
-		                            comment:
-		                            'I represent Fortran Character Constant statement'.
-
-	fortranConstantLogical := builder
-		                          newClassNamed: #ConstantLogical
-		                          comment:
-		                          'I represent Fortran Logical Constant statement'.
-		
-	fortranConstantComplex := builder
-		                          newClassNamed: #ConstantComplex
-		                          comment:
-		                          'I represent Fortran Arithmetic Complex Constant statement'
-]
-
-{ #category : #definition }
-FASTFortranGenerator >> defineDataItems [
-
-	"A variable is a symbolic name paired with a storage location"
-	fortranVariable := builder
+	"Variable is defined by default  FAST"
+	"variable := builder
 		                   newClassNamed: #Variable
-		                   comment: 'I represent Fortran Variable'.
+		                   comment: 'I represent Fortran Variable'."
 
-	fortranArray := builder
-		                newClassNamed: #Array
-		                comment: 'I represent Fortran Array'.
-	fortranArrayDimensionDeclarator := builder
-		                newClassNamed: #ArrayDimensionDeclarator
-		                comment: 'I represent Fortran Array dimension declaration'.
+	array := builder
+		         newClassNamed: #Array
+		         comment: 'I represent Fortran Array'.
+
+	arrayDimensionDeclarator := builder
+		                            newClassNamed: #ArrayDimensionDeclarator
+		                            comment:
+		                            'I represent Fortran Array dimension declaration'.
+
+	substring := builder
+		             newClassNamed: #Substring
+		             comment: 'I represent Fortran Substring'.
+
+	pointer := builder
+		           newClassNamed: #Pointer
+		           comment: 'I represent Fortran Pointer statement'.
+
+	record := builder
+		          newClassNamed: #Record
+		          comment: 'I represent Fortran Record statement'.
+
+	recordField := builder
+		               newClassNamed: #RecordField
+		               comment: 'I represent Fortran RecordField'.
+
+	structure := builder
+		             newClassNamed: #Structure
+		             comment: 'I represent Fortran Structure statement'.
 
 
-	fortranSubstring := builder
-		                    newClassNamed: #Substring
-		                    comment: 'I represent Fortran Substring'.
+	"CONSTANTS"
 
-	fortranStatementPointer := builder
-		                           newClassNamed: #StatementPointer
-		                           comment:
-		                           'I represent Fortran Pointer statement'.
+	"A literal constant is a datum whose value cannot change throughout the program unit. The form of the string representing a constant determines the value and data type of the constant. (For a named constant, defined by a PARAMETER statement, the name defines the data type"
+	"FAST defines constants as literals, so we reuse it and add missing subclasses"
 
-	fortranStatementRecord := builder
-		                          newClassNamed: #StatementRecord
+	"constant := builder
+		                   newClassNamed: #Literal
+		                   comment: 'I represent Fortran Literal (Constant) statement'."
+
+	arithmeticConstant := builder
+		                      newClassNamed: #ConstantArithmetic
+		                      comment:
+		                      'I represent Fortran Arithmetic Literal (Constant) statement'.
+
+	"characterLiteral := builder
+		                            newClassNamed: #CharacterLiteral
+		                            comment:
+		                            'I represent Fortran Character Literal (Constant) statement'."
+
+	"booleanLiteral := builder
+		                          newClassNamed: #BooleanLiteral
 		                          comment:
-		                          'I represent Fortran Record statement'.
+		                          'I represent Fortran Logical Literal (Constant) statement'."
 
-	fortranRecordField := builder
-		                      newClassNamed: #RecordField
-		                      comment: 'I represent Fortran RecordField'.
+	complexConstant := builder
+		                   newClassNamed: #ComplexLiteral
+		                   comment:
+		                   'I represent Fortran Arithmetic Complex Literal (Constant) statement'.
 
-	fortranStatementStructure := builder
-		                             newClassNamed: #StatementStructure
-		                             comment:
-		                             'I represent Fortran Structure statement'.
 
-]
-
-{ #category : #definition }
-FASTFortranGenerator >> defineDataTypes [
-
-	"according to the specification, types are statements too. we extract them to the separate method for our convenience"
-
-	fortranStatementType := builder
-		                        newClassNamed: #StatementType
+	"TYPES"
+ 
+	type := builder
+		                        newClassNamed: #Type
 		                        comment:
 		                        'I represent Fortran Type statement'.
 
-	fortranStatementByte := builder
-		                        newClassNamed: #StatementByte
+	byteType := builder
+		                        newClassNamed: #ByteType
 		                        comment:
 			                        'I represent Fortran Byte statement. The BYTE data type provides a data type that uses only one byte of storage. It is a logical data type, and has the synonym,
 LOGICAL*1. A variable of type BYTE can hold any of the following: 1)one character, 2)an integer between -128 and 127, 3)the logical values, .TRUE. or .FALSE. If it is interpreted as a logical value, a value of 0 represents .FALSE., and any other value is interpreted as .TRUE.
 f77 allows the BYTE type as an array index, just as it allows the REAL type, but it does not allow BYTE as a DO loop index (where it allows only INTEGER, REAL, and DOUBLE PRECISION). Wherever the compiler expects INTEGER explicitly, it will not allow BYTE.'.
 
-	fortranStatementCharacter := builder
-		                             newClassNamed: #StatementCharacter
+	characterType := builder
+		                             newClassNamed: #CharacterType
 		                             comment:
-		                             'I represent Fortran Character statement. The character data type, CHARACTER, which has the synonym, CHARACTER*1, holds one character. The character is enclosed in apostrophes ('') or quotes ("). @ Allowing quotes (") is nonstandard; if you compile with the -xl option, quotes mean something else, and you must use apostrophes to enclose a string. The data of type CHARACTER is always unsigned. A CHARACTER item occupies 1 byte (8 bits) of storage and is aligned on 1-byte boundaries.'.
+		                             'I represent Fortran Character statement. The character data type, CHARACTER, which has the synonym, CHARACTER*1, holds one character. The character is enclosed in apostrophes ('') or quotes (""). @ Allowing quotes ("") is nonstandard; if you compile with the -xl option, quotes mean something else, and you must use apostrophes to enclose a string. The data of type CHARACTER is always unsigned. A CHARACTER item occupies 1 byte (8 bits) of storage and is aligned on 1-byte boundaries.'.
 
-	fortranStatementComplex := builder
-		                           newClassNamed: #StatementComplex
+	complexType := builder
+		                           newClassNamed: #ComplexType
 		                           comment:
 		                           'I represent Fortran Complex statement. A complex datum is an approximation of a complex number. The complex data type, COMPLEX, which defaults to a synonym for COMPLEX*8, is a pair of REAL*4 values that represent a complex number. The first element represents the real part and the second represents the imaginary part.The default size for a COMPLEX item (no size specified) is 8 bytes. The default alignment is on 4-byte boundaries. However, these defaults can be changed by compiling with certain special options'.
 
-	fortranStatementDoubleComplex := builder
+	doubleComplexType := builder
 		                                 newClassNamed:
-		                                 #StatementDoubleComplex
+		                                 #DoubleComplexType
 		                                 comment:
 		                                 'I represent Fortran Double Complex statement. The complex data type, DOUBLE COMPLEX, which usually has the synonym, COMPLEX*16, is a pair of DOUBLE PRECISION (REAL*8)values that represents a complex number. The first element represents the real part; the second represents the imaginary part.The default size for DOUBLE COMPLEX with no size specified is 16.'.
 
-	fortranStatementDoublePrecision := builder
+	doublePrecisionType := builder
 		                                   newClassNamed:
-		                                   #StatementDoublePrecision
+		                                   #DoublePrecisionType
 		                                   comment:
 		                                   'I represent Fortran Double Precision statement. A double-precision datum is an approximation of a real number. The double-precision data type, DOUBLE PRECISION, which has the synonym, REAL*8, holds one double-precision datum.The default size for DOUBLE PRECISION with no size specified is 8 bytes.A DOUBLE PRECISION element has a sign bit, an 11-bit exponent, and a 52-bit fraction. These DOUBLE PRECISION elements in f77 conform to the IEEE standard for double-precision floating-point data.'.
 
-	fortranStatementInteger := builder
-		                           newClassNamed: #StatementInteger
+	integerType := builder
+		                           newClassNamed: #IntegerType
 		                           comment:
 			                           'I represent Fortran Integer statement. The integer data type, INTEGER, holds a signed integer.
 The default size for INTEGER with no size specified is 4, and is aligned on 4-byte boundaries. However, these defaults can be
 changed by compiling with certain special options.'.
 
-	fortranStatementLogical := builder
-		                           newClassNamed: #StatementLogical
+	logicalType := builder
+		                           newClassNamed: #LogicalType
 		                           comment:
 		                           'I represent Fortran Logical statement. The logical data type, LOGICAL, holds a logical value .TRUE. or .FALSE. The value 0 represents .FALSE.; any other value represents .TRUE.The usual default size for an LOGICAL item with no size specified is 4, and is aligned on 4-byte boundaries. However, these defaults can be changed by compiling with certain special options.'.
 
-	fortranStatementReal := builder
-		                        newClassNamed: #StatementReal
+	realType := builder
+		                        newClassNamed: #RealType
 		                        comment:
 		                        'I represent Fortran Real statement. A real datum is an approximation of a real number. The real data type, REAL, which usually has the synonym, REAL*4, holds one real datum.The usual default size for a REAL item with no size specified is 4 bytes, and is aligned on 4-byte boundaries. However, these defaults can be changed by compiling with certain special options.A REAL element has a sign bit, an 8-bit exponent, and a 23-bit fraction. These REAL elements in f77 conform to the IEEE standard.'
-]
+	
 
-{ #category : #definition }
-FASTFortranGenerator >> defineExpressions [
-
-	"Expressions"
-
-	fortranExpression := builder
-		                     newClassNamed: #FortranExpression
-		                     comment: self commentForExpression.
-
-	fortranArithmeticTypeExpression := builder
-		                                   newClassNamed:
-		                                   #ArithmeticTypeExpression
-		                                   comment:
-		                                   self commentForExpression.
-	fortranCharacterTypeExpression := builder
-		                                  newClassNamed:
-		                                  #CharacterTypeExpression
-		                                  comment: self commentForExpression.
-	fortranLogicalTypeExpression := builder
-		                                newClassNamed:
-		                                #LogicalTypeExpression
-		                                comment: self commentForExpression.
-	fortranLoopControlExpression := builder newClassNamed:
-		                                #LoopControlExpression
 ]
 
 { #category : #definition }
 FASTFortranGenerator >> defineHierarchy [
 
 	super defineHierarchy.
-	
-	"fortran program units"
-	fortranStatementProgram --|> fortranProgramUnit.
-	fortranSubprogram --|> fortranProgramUnit. 
-	
-	"fortran subprograms"
-	fortranProcedure --|> fortranSubprogram.
-	fortranStatementBlockData --|> fortranSubprogram.
-	
-	"fortran procedures"
-	fortranStatementFunction --|> fortranProcedure.
-	fortranStatementSubroutine --|> fortranProcedure.
-	
-	"can have symbolic name. 
-	TODO: Not sure if it is inheritance or composition (depends if symbolic name was already declared)
-	TODO: not fully populated"
-	
-	fortranVariable --|> tWithSymbolicName. 
-	fortranArray --|> tWithSymbolicName.
-	fortranStatementStructure --|> tWithSymbolicName.
-	fortranStatementRecord --|> tWithSymbolicName.
-	fortranRecordField --|> tWithSymbolicName.
-	fortranStatementBlockData --|> tWithSymbolicName.
-	fortranStatementSubroutine --|> tWithSymbolicName.
-	fortranStatementFunction --|> tWithSymbolicName.
-	fortranStatementEntry --|> tWithSymbolicName.
-	fortranStatementNameList --|> tWithSymbolicName.
-	
-	"constants"
-	fortranConstantArithmetic --|> fortranConstant. 
-	fortranConstantLogical --|> fortranConstant. 
-	fortranConstantCharacter --|> fortranConstant.
-	fortranConstantComplex --|> fortranConstantArithmetic.
-	
-	"fortran executable statements"
-	fortranStatementAccept --|> tFortranExecutableStatement. 
-	fortranStatementAssign --|> tFortranExecutableStatement.
-	fortranStatementBackspace --|> tFortranExecutableStatement.
-	fortranStatementAccept --|> tFortranExecutableStatement.
-	fortranStatementCall --|> tFortranExecutableStatement.
-	fortranStatementClose --|> tFortranExecutableStatement.
-	fortranStatementAccept --|> tFortranExecutableStatement.
-	fortranStatementContinue --|> tFortranExecutableStatement.
-	fortranStatementDecode --|> tFortranExecutableStatement.
-	fortranStatementDo --|> tFortranExecutableStatement.
-	fortranStatementDoWhile --|> tFortranExecutableStatement.
-	fortranStatementElse --|> tFortranExecutableStatement.
-	fortranStatementElseIf --|> tFortranExecutableStatement.
-	fortranStatementEncode --|> tFortranExecutableStatement.
-	fortranStatementEnd --|> tFortranExecutableStatement.
-	fortranStatementEndDo --|> tFortranExecutableStatement.
-	fortranStatementEndFile --|> tFortranExecutableStatement.
-	fortranStatementEndIf --|> tFortranExecutableStatement.
-	fortranStatementGoTo --|> tFortranExecutableStatement.
-	fortranStatementGoToAssigned --|> tFortranExecutableStatement.
-	fortranStatementGoToComputed --|> tFortranExecutableStatement.
-	fortranStatementGoToUnconditional --|> tFortranExecutableStatement.
-	fortranStatementIfArithmetic --|> tFortranExecutableStatement.
-	fortranStatementIfBlock --|> tFortranExecutableStatement.
-	fortranStatementIfLogical --|> tFortranExecutableStatement.
-	fortranStatementInquire --|> tFortranExecutableStatement.
-	fortranStatementOpen --|> tFortranExecutableStatement.
-	fortranStatementPause --|> tFortranExecutableStatement.
-	fortranStatementPrint --|> tFortranExecutableStatement.
-	fortranStatementReturn --|> tFortranExecutableStatement.
-	fortranStatementRewind --|> tFortranExecutableStatement.
-	fortranStatementStatic --|> tFortranExecutableStatement.
-	fortranStatementStop --|> tFortranExecutableStatement.
-	fortranStatementWrite --|> tFortranExecutableStatement.
-	
-	"fortran not executable statements"
-	fortranStatementAutomatic  --|> tFortranNotExecutableStatement.
-	fortranStatementBlockData --|> tFortranNotExecutableStatement.
-	fortranStatementByte --|> tFortranNotExecutableStatement.
-	fortranStatementCharacter --|> tFortranNotExecutableStatement.
-	fortranStatementCommon --|> tFortranNotExecutableStatement.
-	fortranStatementComplex --|> tFortranNotExecutableStatement.	
-	fortranStatementData --|> tFortranNotExecutableStatement.
-	fortranStatementDimension --|> tFortranNotExecutableStatement.
-	fortranStatementDoubleComplex --|> tFortranNotExecutableStatement.
-	fortranStatementDoublePrecision --|> tFortranNotExecutableStatement.
-	fortranStatementEndStructure --|> tFortranNotExecutableStatement.	
-	fortranStatementEndUnion --|> tFortranNotExecutableStatement.
-	fortranStatementEntry --|> tFortranNotExecutableStatement.
-	fortranStatementEquivalence --|> tFortranNotExecutableStatement.
-	fortranStatementExternal --|> tFortranNotExecutableStatement.
-	fortranStatementFormat --|> tFortranNotExecutableStatement.	
-	fortranStatementFunction --|> tFortranNotExecutableStatement.
-	fortranStatementImplicit --|> tFortranNotExecutableStatement.
-	fortranStatementInclude --|> tFortranNotExecutableStatement.
-	fortranStatementInteger --|> tFortranNotExecutableStatement.
-	fortranStatementIntrinsic --|> tFortranNotExecutableStatement.	
-	fortranStatementLogical --|> tFortranNotExecutableStatement.
-	fortranStatementMap --|> tFortranNotExecutableStatement.
-	fortranStatementNameList --|> tFortranNotExecutableStatement.
-	fortranStatementOptions --|> tFortranNotExecutableStatement.
-	fortranStatementParameter --|> tFortranNotExecutableStatement.	
-	fortranStatementPointer --|> tFortranNotExecutableStatement.	
-	fortranStatementPragma --|> tFortranNotExecutableStatement.	
-	fortranStatementProgram --|> tFortranNotExecutableStatement.	
-	fortranStatementReal --|> tFortranNotExecutableStatement.	
-	fortranStatementRecord --|> tFortranNotExecutableStatement.	
-	fortranStatementSave --|> tFortranNotExecutableStatement.	
-	fortranStatementStructure --|> tFortranNotExecutableStatement.	
-	fortranStatementSubroutine --|> tFortranNotExecutableStatement.	
-	fortranStatementType --|> tFortranNotExecutableStatement.	
-	fortranStatementUnion --|> tFortranNotExecutableStatement.	
-	fortranStatementVirtual --|> tFortranNotExecutableStatement.	
-	fortranStatementVolatile --|> tFortranNotExecutableStatement.	
-	
-	"fortran non-standard features"
-	fortranStatementByte --|> tFortranNotStandardFeatures.	
-	fortranStatementDoubleComplex --|> tFortranNotStandardFeatures.
-	
-	fortranStatementSubroutine --|> tWithArguments.
-	fortranStatementSubroutine --|> tWithParameters.  	
 
-	fortranVariable --|> tParameter. 
-	fortranArray --|> tParameter.
-	fortranRecordField --|> tParameter.
-	"TODO subroutine parameter can also be a dummy procedure name, an asterisk, or an ampersand "	
+	programUnit --|> entity.
+	subprogram --|> programUnit.
+	mainprogram --|> programUnit.
+	procedure --|> subprogram.
+	blockData --|> subprogram.
+	function --|> procedure.
+	subroutine --|> procedure.
 
+	"other entities"
+	comment --|> entity.
+
+	"STATEMENTS"
+	acceptStatement --|> statement.
+	assignStatement --|> statement.
+	assignmentStatement --|> statement.
+	automaticStatement --|> statement.
+	backspaceStatement --|> statement.
+	callStatement --|> statement.
+	closeStatement --|> statement.
+	commonStatement --|> statement.
+	continueStatement --|> statement.
+	dataStatement --|> statement.
+	decodeStatement --|> statement.
+	encodeStatement --|> statement.
+	dimensionStatement --|> statement.
+	doStatement --|> statement.
+	doWhileStatement --|> statement.
+	elseStatement --|> statement.
+	elseIfStatement --|> statement.
+	endStatement --|> statement.
+	endDoStatement --|> statement.
+	endFileStatement --|> statement.
+	endIfStatement --|> statement.
+	endMapStatement --|> statement.
+	endStructureStatement --|> statement.
+	endUnionStatement --|> statement.
+	entryStatement --|> statement.
+	equivalenceStatement --|> statement.
+	externalStatement --|> statement.
+	formatStatement --|> statement.
+	goToStatement --|> statement.
+	goToAssignedStatement --|> statement.
+	goToComputed --|> statement.
+	goToUnconditional --|> statement.
+	ifArithmeticStatement --|> statement.
+	ifBlockStatement --|> statement.
+	ifLogicalStatement --|> statement.
+	implicitStatement --|> statement.
+	includeStatement --|> statement.
+	inquireStatement --|> statement.
+	intrinsicStatement --|> statement.
+	mapStatement --|> statement.
+	nameListStatement --|> statement.
+	openStatement --|> statement.
+	optionsStatement --|> statement.
+	parameterStatement --|> statement.
+	pauseStatement --|> statement.
+	pragmaStatement --|> statement.
+	printStatement --|> statement.
+	readStatement --|> statement.
+	rewindStatement --|> statement.
+	saveStatement --|> statement.
+	staticStatement --|> statement.
+	stopStatement --|> statement.
+	unionStatement --|> statement.
+	virtualStatement --|> statement.
+	volatileStatement --|> statement.
+	writeStatement --|> statement.
+	
+	
+	"DATA"
+	arithmeticExpression --|> expression.
+	characterExpression --|> expression.
+	logicalExpression --|> expression.
+	loopControlExpression --|> expression.
+	
+	array --|> entity.
+	arrayDimensionDeclarator --|> array.
+	substring --|> entity.
+	pointer --|> entity.
+	record --|> entity.
+	recordField --|> record.
+	structure --|> entity.
+	arithmeticConstant --|> literal.
+	complexConstant --|> literal.
+	
+	type --|> entity.
+	byteType --|> type.
+	characterType --|> type.
+	complexType --|> type.
+	doubleComplexType --|> type.
+	doublePrecisionType --|> type.
+	integerType --|> type.
+	logicalType --|> type.
+	realType --|> type.
+	
+	"TRAITS"
+	subroutine --|> tWithParameters.
+	
+	"TODO: an asterisk, or an ampersand can be a subroutine parameter as well"
+	array --|> tParameter.
+	record --|> tParameter.
+	procedure --|> tParameter.    
+	
 ]
 
 { #category : #definition }
 FASTFortranGenerator >> defineProperties [
 
 	super defineProperties.
-	
-	(fortranStatementProgram property: #name type: #String) comment:
+
+	(programUnit property: #name type: #String) comment:
+		'Symbolic name of a program unit'.
+
+	"(mainprogram property: #name type: #String) comment:
 		'Symbolic name of the main program'.
-	
-	(fortranStatementSubroutine property: #name type: #String) comment:
+	(function property: #name type: #String) comment:
 		'Name of subroutine subprogram'.
+	(subroutine property: #name type: #String) comment:
+		'Name of subroutine subprogram'.
+	(blockData property: #name type: #String) comment:
+		'Symbolic name of the block data subprogram in which the BLOCK DATA statement appears. This parameter is optional. It is a global name.'."
 
-	(fortranStatementBlockData property: #name type: #String) comment:
-		'Symbolic name of the block data subprogram in which the BLOCK DATA statement appears. This parameter is optional. It is a global name.'.
-
-	(fortranStatement property: #label type: #String) comment:
+	(statement property: #label type: #String) comment:
 		'Determines the statement label which consists of 1 to 5 digits, with at least one nonzero'.
 
 
-	"constants"
-	(fortranConstant property: #type type: #String) comment:
-		'Determines the constant type'.
-	(fortranConstant property: #value type: #String) comment:
-		'Determines the constant value'.
-	(fortranConstantArithmetic property: #isTyped type: #Boolean) 
-		comment: 'Determines if the constant typed or typeless'.
-	(fortranConstantArithmetic property: #isSigned type: #Boolean) 
-		comment: 'Determines if the constant signed or not'.
-	(fortranConstantArithmetic property: #sign type: #Number) comment:
+	"Defined in FAST"
+	"(literal property: #value type: #String) comment:
+		'Determines the constant value'."
+	(arithmeticConstant property: #isTyped type: #Boolean) comment:
+		'Determines if the constant typed or typeless'.
+	(arithmeticConstant property: #isSigned type: #Boolean) comment:
+		'Determines if the constant signed or not'.
+	(arithmeticConstant property: #sign type: #Number) comment:
 		'Determines the arithmetic constant sign'.
 
 	"variables"
-	(fortranVariable property: #name type: #String) comment:
-		'Determines the variable name'.
-	(fortranVariable property: #type type: #String) comment:
+	(variableExpression property: #type type: #String) comment:
 		'Determines the variable type'.
-	(fortranVariable property: #value type: #String) comment:
+	(variableExpression property: #value type: #String) comment:
 		'Determines the variable value'.
-	(fortranVariable property: #defined type: #Boolean) comment:
+	(variableExpression property: #defined type: #Boolean) comment:
 		'Determines if the variableis defined (stores a value)'.
 
 	"arrays"
-	(fortranArray property: #name type: #String) comment:
+	(array property: #name type: #String) comment:
 		'Determines the array name'.
-	(fortranArray property: #name type: #String) comment:
-		'Determines the array name'.
-	(fortranArray property: #dimensions type: #String) comment:
-		'Determines the array dimensions'.
-	(fortranArrayDimensionDeclarator property: #dl type: #Number) 
-		comment: 'Determines the array dimension declaration lower bound'.
-	(fortranArrayDimensionDeclarator property: #du type: #Number) 
-		comment: 'Determines the array dimension declaration upper bound'.
 
-	"subroutine"
-	(fortranStatementSubroutine property: #name type: #String) comment:
-		'Determines the subroutine name'.
-		
-	(fortranComment property: #content type: #String) comment:
+	(externalStatement property: #name type: #String) comment:
+		'Name of external procedure, dummy procedure, or block data routine'.
+
+	(callStatement property: #name type: #String) comment:
+		'Name of a callling entity'.
+
+	(comment property: #content type: #String) comment:
 		'Determines a content of a comment'.
-		
-	(fortranStatementExternal property: #name type: #String) comment:
-		'Name of external procedure, dummy procedure, or block data routine. '.
-		
-	(fortranStatementWrite property: #format type: #String) comment:
+
+	(writeStatement property: #format type: #String) comment:
 		'Format identifier. '.
+		
+	(loopControlExpression property: #init type: #String) comment:
+		'Loop control initial value'.
+		
+	(loopControlExpression property: #increment type: #String) comment:
+		'Loop control increment value'.
+		
+	(loopControlExpression property: #limit type: #String) comment:
+		'Loop control limit value'.
 ]
 
 { #category : #definition }
 FASTFortranGenerator >> defineRelations [
 
 	super defineRelations.
-
-	"A program unit is a sequence of statements, terminated by an END statement."
-	((fortranProgramUnit property: #statements) comment:
-		 'Statements of the PU ')
-	<>-* ((fortranStatement property: #parentUnitName) comment:
-			 'Name of the parent unit').
-
-
-	"""subrutine""
-	((fortranStatementSubroutine property: #variables type: #String) 
-		comment:
-			'')
-			<>-* ((fortranVariable property: #subroutine) comment:
-					 'Link to the parent subroutine')."
-					
-					
-	"expressions"
-	"((fortranAssignementExpression property: #expression) comment:
-		 'Expression that is being assigned upon declaration to the var')
-	<>-
-		((expression property: #fortranAssignementExpressionOwner) comment:
-			 'The fortranAssignementExpression owner (if possible)').
-
-	((tWithAssigneable property: #variable) comment: 'My variable')
-	<>-
-		((tAssigneable property: #fortranVariableAssignementOwner) comment:
-			 'The owner of the modifier').
 	
-((tWithFortranExpression property: #variable) comment: 'My variable')
-	<>- ((tFortranExpression property: #fortranVariableAssignementOwner) comment:
-			 'The owner of the modifier')."
+	((programUnit property: #statements) comment:
+		 'Statements of the program unit ')
+	<>-* ((statement property: #parentProgramUnit) comment:
+			 'Parent program unit').
+			
+	((logicalExpression property: #left) comment:
+		 'left part of the expression')
+	<>- ((expression property: #logicalExpressionLeftPart) comment:
+			 'Parent expression (if possible)').
+			
+	((logicalExpression property: #right) comment:
+		 'left part of the expression')
+	<>- ((expression property: #logicalExpressionLeftPart) comment:
+			 'Parent expression (if possible)').
+
+	((arithmeticExpression property: #left) comment:
+		 'left part of the expression')
+	<>- ((expression property: #logicalExpressionLeftPart) comment:
+			 'Parent expression (if possible)').
+			
+	((arithmeticExpression property: #right) comment:
+		 'left part of the expression')
+	<>- ((expression property: #logicalExpressionLeftPart) comment:
+			 'Parent expression (if possible)').	
+				
+	((doStatement property: #loopControl) comment:
+		 'loop control')
+	<>- ((loopControlExpression property: #parentLoop) comment:
+			 'Parent loop').	
+
+	
+	
 ]
 
 { #category : #'private - definition' }
@@ -583,252 +562,250 @@ FASTFortranGenerator >> defineStatements [
 
 	"A statement consists of zero or more key words, symbolic names, literal constants, statement labels, operators, and special characters."
 
-	fortranStatement := builder newClassNamed: #FortranStatement.
-
-	fortranStatementAccept := builder
-		                          newClassNamed: #StatementAccept
+	acceptStatement := builder
+		                          newClassNamed: #AcceptStatement
 		                          comment:
 		                          'I represent Fortran accept statement'.
-	fortranStatementAssign := builder
-		                          newClassNamed: #StatementAssign
+	
+	assignStatement := builder
+		                          newClassNamed: #AssignStatement
 		                          comment:
-		                          'I represent Fortran Assign statement'.
-	fortranStatementAutomatic := builder
-		                             newClassNamed: #StatementAutomatic
+		                          'I represent Fortran ASSIGN statement'.
+		
+	assignmentStatement := builder
+		                          newClassNamed: #AssignmentStatement
+		                          comment:
+		                          'I represent Fortran assignment made without ASSIGN statement'.	
+		
+	automaticStatement := builder
+		                             newClassNamed: #AutomaticStatement
 		                             comment:
 		                             'I represent Fortran Automatic statement'.
-	fortranStatementBackspace := builder
-		                             newClassNamed: #StatementBackspace
+	backspaceStatement := builder
+		                             newClassNamed: #BackspaceStatement
 		                             comment:
 		                             'I represent Fortran Backspace statement'.
-	fortranStatementBlockData := builder
-		                             newClassNamed: #StatementBlockData
-		                             comment:
-		                             'The BLOCK DATA statement identifies a subprogram that initializes variables and arrays in labeled common blocks.'.
-	fortranStatementCall := builder
-		                        newClassNamed: #StatementCall
+	callStatement := builder
+		                        newClassNamed: #CallStatement
 		                        comment:
 		                        'I represent Fortran Call statement'.
-	fortranStatementClose := builder
-		                         newClassNamed: #StatementClose
+	closeStatement := builder
+		                         newClassNamed: #CloseStatement
 		                         comment:
 		                         'I represent Fortran Close statement'.
-	fortranStatementCommon := builder
-		                          newClassNamed: #StatementCommon
+	commonStatement := builder
+		                          newClassNamed: #CommonStatement
 		                          comment:
 		                          'I represent Fortran Common statement'.
-	fortranStatementContinue := builder
-		                            newClassNamed: #StatementContinue
+	continueStatement := builder
+		                            newClassNamed: #ContinueStatement
 		                            comment:
 		                            'I represent Fortran Continue statement'.
-	fortranStatementData := builder
-		                        newClassNamed: #StatementData
+	dataStatement := builder
+		                        newClassNamed: #DataStatement
 		                        comment: 'I represent FortranData statement'.
-	fortranStatementDecode := builder
-		                          newClassNamed: #StatementDecode
+	decodeStatement := builder
+		                          newClassNamed: #DecodeStatement
 		                          comment:
 		                          'I represent Fortran Decode statement'.
-	fortranStatementEncode := builder
-		                          newClassNamed: #StatementEncode
+	encodeStatement := builder
+		                          newClassNamed: #EncodeStatement
 		                          comment:
 		                          'I represent Fortran Encode statement'.
-	fortranStatementDimension := builder
-		                             newClassNamed: #StatementDimension
+	dimensionStatement := builder
+		                             newClassNamed: #DimensionStatement
 		                             comment:
 		                             'I represent FortranDimension statement'.
-	fortranStatementDo := builder
-		                      newClassNamed: #StatementDo
+	doStatement := builder
+		                      newClassNamed: #DoStatement
 		                      comment: 'I represent Fortran Do statement'.
-	fortranStatementDoWhile := builder
-		                           newClassNamed: #StatementDoWhile
+	doWhileStatement := builder
+		                           newClassNamed: #DoWhileStatement
 		                           comment:
 		                           'I represent Fortran Do While statement'.
-	fortranStatementElse := builder
-		                        newClassNamed: #StatementElse
+	elseStatement := builder
+		                        newClassNamed: #ElseStatement
 		                        comment:
 		                        'I represent Fortran Else statement'.
-	fortranStatementElseIf := builder
-		                          newClassNamed: #StatementElseIf
+	elseIfStatement := builder
+		                          newClassNamed: #ElseIfStatement
 		                          comment:
 		                          'I represent Fortran Else If statement'.
-	fortranStatementEnd := builder
-		                       newClassNamed: #StatementEnd
+	endStatement := builder
+		                       newClassNamed: #EndStatement
 		                       comment: 'I represent Fortran End statement'.
-	fortranStatementEndDo := builder
-		                         newClassNamed: #StatementEndDo
+	endDoStatement := builder
+		                         newClassNamed: #EndDoStatement
 		                         comment:
 		                         'I represent Fortran End Do or ENDDO statement'.
-	fortranStatementEndFile := builder
-		                           newClassNamed: #StatementEndFile
+	endFileStatement := builder
+		                           newClassNamed: #EndFileStatement
 		                           comment:
 		                           'I represent Fortran End File statement'.
-	fortranStatementEndIf := builder
-		                         newClassNamed: #StatementEndIf
+	endIfStatement := builder
+		                         newClassNamed: #EndIfStatement
 		                         comment:
 		                         'I represent Fortran End If statement'.
-	fortranStatementEndMap := builder
-		                          newClassNamed: #StatementEndMap
+	endMapStatement := builder
+		                          newClassNamed: #EndMapStatement
 		                          comment:
 		                          'I represent Fortran End Map statement'.
-	fortranStatementEndStructure := builder
+	endStructureStatement := builder
 		                                newClassNamed:
-		                                #StatementEndStructure
+		                                #EndStructureStatement
 		                                comment:
 		                                'I represent Fortran End Structure statement'.
-	fortranStatementEndUnion := builder
-		                            newClassNamed: #StatementEndUnion
+	endUnionStatement := builder
+		                            newClassNamed: #EndUnionStatement
 		                            comment:
 		                            'I represent Fortran End Union statement'.
-	fortranStatementEntry := builder
-		                         newClassNamed: #StatementEntry
+	entryStatement := builder
+		                         newClassNamed: #EntryStatement
 		                         comment:
 		                         'I represent Fortran Entry statement'.
-	fortranStatementEquivalence := builder
-		                               newClassNamed: #StatementEquivalence
+	equivalenceStatement := builder
+		                               newClassNamed: #EquivalenceStatement
 		                               comment:
 		                               'I represent Fortran Equivalence statement'.
-	fortranStatementExternal := builder
-		                            newClassNamed: #StatementExternal
+	externalStatement := builder
+		                            newClassNamed: #ExternalStatement
 		                            comment:
 		                            'I represent Fortran External statement'.
-	fortranStatementFormat := builder
-		                          newClassNamed: #StatementFormat
+	formatStatement := builder
+		                          newClassNamed: #FormatStatement
 		                          comment:
 		                          'I represent Fortran Format statement'.
-	fortranStatementFunction := builder
-		                            newClassNamed: #StatementFunction
-		                            comment:
-		                            'I represent Fortran Function statement'.
-	fortranStatementGoTo := builder
-		                        newClassNamed: #StatementGoTo
+
+	goToStatement := builder
+		                        newClassNamed: #GoToStatement
 		                        comment:
 		                        'I represent Fortran Go To statement'.
-	fortranStatementGoToAssigned := builder
+		
+	goToAssignedStatement := builder
 		                                newClassNamed:
-		                                #StatementGoToAssigned
+		                                #GoToAssignedStatement
 		                                comment:
 		                                'I represent Fortran Go To( Assigned) statement'.
-	fortranStatementGoToComputed := builder
+	goToComputed := builder
 		                                newClassNamed:
-		                                #StatementGoToComputed
+		                                #GoToComputedStatement
 		                                comment:
 		                                'I represent Fortran Go To (Computed) statement'.
-	fortranStatementGoToUnconditional := builder
+	goToUnconditional := builder
 		                                     newClassNamed:
-		                                     #StatementGoToUnconditional
+		                                     #GoToUnconditionalStatement
 		                                     comment:
 		                                     'I represent Fortran Go To (Unconditional) statement'.
-	fortranStatementIfArithmetic := builder
+	ifArithmeticStatement := builder
 		                                newClassNamed:
-		                                #StatementIfArithmetic
+		                                #IfArithmeticStatement
 		                                comment:
 		                                'I represent Fortran If (Arithmetic) statement'.
-	fortranStatementIfBlock := builder
-		                           newClassNamed: #StatementIfBlock
+	ifBlockStatement := builder
+		                           newClassNamed: #IfBlockStatement
 		                           comment:
 		                           'I represent Fortran If (BLock) statement'.
-	fortranStatementIfLogical := builder
-		                             newClassNamed: #StatementIfLogical
+	ifLogicalStatement := builder
+		                             newClassNamed: #IfLogicalStatement
 		                             comment:
 		                             'I represent Fortran If (Logical) statement'.
-	fortranStatementImplicit := builder
-		                            newClassNamed: #StatementImplicit
+	implicitStatement := builder
+		                            newClassNamed: #ImplicitStatement
 		                            comment:
 		                            'I represent Fortran Implicit statement'.
-	fortranStatementInclude := builder
-		                           newClassNamed: #StatementInclude
+	includeStatement := builder
+		                           newClassNamed: #IncludeStatement
 		                           comment:
 		                           'I represent Fortran Include statement'.
-	fortranStatementInquire := builder
-		                           newClassNamed: #StatementInquire
+	inquireStatement := builder
+		                           newClassNamed: #InquireStatement
 		                           comment:
 		                           'I represent Fortran Inquire statement'.
-	fortranStatementIntrinsic := builder
-		                             newClassNamed: #StatementIntrinsic
+	intrinsicStatement := builder
+		                             newClassNamed: #IntrinsicStatement
 		                             comment:
 		                             'I represent Fortran Intrinsic statement'.
-	fortranStatementMap := builder
-		                       newClassNamed: #StatementMap
+	mapStatement := builder
+		                       newClassNamed: #MapStatement
 		                       comment: 'I represent Fortran Map statement'.
-	fortranStatementNameList := builder
-		                            newClassNamed: #StatementNameList
+	nameListStatement := builder
+		                            newClassNamed: #NameListStatement
 		                            comment:
 		                            'I represent Fortran NameList statement'.
-	fortranStatementOpen := builder
-		                        newClassNamed: #StatementOpen
+	openStatement := builder
+		                        newClassNamed: #OpenStatement
 		                        comment:
 		                        'I represent Fortran Open statement'.
-	fortranStatementOptions := builder
-		                           newClassNamed: #StatementOptions
+	optionsStatement := builder
+		                           newClassNamed: #OptionsStatement
 		                           comment:
 		                           'I represent Fortran Options statement'.
-	fortranStatementParameter := builder
-		                             newClassNamed: #StatementParameter
+	parameterStatement := builder
+		                             newClassNamed: #ParameterStatement
 		                             comment:
 		                             'I represent Fortran Parameter statement'.
-	fortranStatementPause := builder
-		                         newClassNamed: #StatementPause
+	pauseStatement := builder
+		                         newClassNamed: #PauseStatement
 		                         comment:
 		                         'I represent Fortran Pause statement'.
-	fortranStatementPragma := builder
-		                          newClassNamed: #StatementPragma
+	pragmaStatement := builder
+		                          newClassNamed: #PragmaStatement
 		                          comment:
 		                          'I represent Fortran Pragma statement'.
-	fortranStatementPrint := builder
-		                         newClassNamed: #StatementPrint
+	printStatement := builder
+		                         newClassNamed: #PrintStatement
 		                         comment:
 		                         'I represent Fortran Print statement'.
 	
-	fortranStatementProgram := builder
-		                          newClassNamed: #StatementProgram
-		                          comment:
-		                          'The PROGRAM statement identifies the program unit as a main program'.
-	
-	fortranStatementRead := builder
-		                        newClassNamed: #StatementRead
+	readStatement := builder
+		                        newClassNamed: #ReadStatement
 		                        comment:
 		                        'I represent Fortran Read statement'.
-	fortranStatementReturn := builder
+	"defined globally"	
+	"statementReturn := builder
 		                          newClassNamed: #StatementReturn
 		                          comment:
-		                          'I represent Fortran Return statement'.
-	fortranStatementRewind := builder
-		                          newClassNamed: #StatementRewind
+		                          'I represent Fortran Return statement'."
+	rewindStatement := builder
+		                          newClassNamed: #RewindStatement
 		                          comment:
 		                          'I represent Fortran Rewind statement'.
-	fortranStatementSave := builder
-		                        newClassNamed: #StatementSave
+	saveStatement := builder
+		                        newClassNamed: #SaveStatement
 		                        comment:
 		                        'I represent Fortran Save statement'.
-	fortranStatementSubroutine := builder
-		                              newClassNamed: #StatementSubroutine
-		                              comment:
-		                              'The SUBROUTINE statement identifies a named program unit as a subroutine, and specifies arguments for it'.
 	
-	fortranStatementStatic := builder
-		                          newClassNamed: #StatementStatic
+	staticStatement := builder
+		                          newClassNamed: #StaticStatement
 		                          comment:
 		                          'I represent Fortran Static statement'.
-	fortranStatementStop := builder
-		                        newClassNamed: #StatementStop
+	stopStatement := builder
+		                        newClassNamed: #StopStatement
 		                        comment:
 		                        'I represent Fortran Stop statement'.
-	fortranStatementUnion := builder
-		                         newClassNamed: #StatementUnion
+	unionStatement := builder
+		                         newClassNamed: #UnionStatement
 		                         comment:
 		                         'I represent Fortran Union statement'.
-	fortranStatementVirtual := builder
-		                           newClassNamed: #StatementVirtual
+	virtualStatement := builder
+		                           newClassNamed: #VirtualStatement
 		                           comment:
 		                           'I represent Fortran Virtual statement'.
-	fortranStatementVolatile := builder
-		                            newClassNamed: #StatementVolatile
+	volatileStatement := builder
+		                            newClassNamed: #volatileStatement
 		                            comment:
 		                            'I represent Fortran Volatile statement'.
-	fortranStatementWrite := builder
-		                         newClassNamed: #StatementWrite
+	writeStatement := builder
+		                         newClassNamed: #WriteStatement
 		                         comment:
-		                         'I represent Fortran Write statement'
+		
+		                         'I represent Fortran Write statement'.
+		
+	"NOT IN THE 77 STANDARD"
+	exitStatement := builder
+		                         newClassNamed: #ExitStatement
+		                         comment:
+		                         'I represent Fortran90 Exit statement'.
 ]
 
 { #category : #definition }
@@ -836,85 +813,5 @@ FASTFortranGenerator >> defineTraits [
 
 	super defineTraits.
 
-	tWithSymbolicName := builder
-		                     newTraitNamed: #TFortranWithSymbolicName
-		                     comment: 'I can have a symbolic name'.
-
-	tFortranTerminalStatement := builder
-		                             newTraitNamed:
-		                             #TFortranTerminalStatement
-		                             comment:
-		                             'I can serve as a fortran terminal statement'.
-
-	tFortranExecutableStatement := builder
-		                               newTraitNamed:
-		                               #TFortranExecutableStatement
-		                               comment:
-		                               'I am a fortran executable statement (I specify an action to be taken at runtime)'.
-
-	tFortranNotExecutableStatement := builder
-		                                  newTraitNamed:
-		                                  #TFortranNotExecutableStatement
-		                                  comment:
-		                                  'I am a fortran not executable statement (I specify attributes, such as type and size; determine arrangement or order; define initial data values; specify editing instructions; define statement functions; classify program units; and define entry points. In general, I am are completed before execution of the first executable statement)'.
-
-	tFortranNotStandardFeatures := builder
-		                               newTraitNamed:
-		                               #TFortranNotStandardFeatures
-		                               comment: '
-		I represent "Non-standard" or "Extension" feature which go beyond versions compatible with the ANSI X3.9-1978 FORTRAN standard and the corresponding International Organization for Standardization (ISO) 1539-1980, FIPS 69-1, BS 6832, and MIL-STD-1753 ( Floating-point arithmetic for both compilers is based on IEEE standard 754-1985, and international standard IEC 60559:1989); on SPARC platforms, both compilers provide support for the optimization-exploiting features of SPARC V8, and SPARC V9, including the UltraSPARC(TM) implementation. These features are defined in the SPARC Architecture Manuals, Version 8 (ISBN 0-13-825001-4), and Version 9 (ISBN 0-13-099227-5), published by Prentice-Hall for SPARC International.'.
-
-	tFortranTypedStatement := builder
-		                          newTraitNamed: #TFortranTypedStatement
-		                          comment: '
-		I usually represent a type of any constant (except for specifically typeless constants), constant expression, variable, array, array element, substring, or function'
-	"
-	tFortranExpression := builder
-		                newTraitNamed: #TFortranExpression
-		                comment: 'self commentForFortranTFortranExpression'.
-		
-	tWithFortranExpression := builder
-		                    newTraitNamed: #TWithFortranExpression
-		                    comment: 'I have an FortranExpression'.
-	"
-]
-
-{ #category : #definition }
-FASTFortranGenerator >> defineTypes [
-
-	self defineDataTypes.
-	self defineConstants. 
 	
-	
-	
-	
-
-	
-]
-
-{ #category : #definition }
-FASTFortranGenerator >> famixTempClasses [
-
-	"these calsses are most probably will be loaded from the famix"
-
-	fortranProgramUnit := builder
-		                      newClassNamed: #ProgramUnit
-		                      comment:
-		                      'A fortran program unit is a sequence of statements, terminated by an END statement. Every program unit is either a main program or a subprogram. If a program is to be executable, it must have a main program'.
-
-	fortranComment := builder
-		                  newClassNamed: #Comment
-		                  comment: 'A fortran comment'.
-
-
-	fortranSubprogram := builder
-		                     newClassNamed: #Subprogram
-		                     comment:
-		                     'I represent a fortran subprogram: procedure or block data'.
-
-
-	fortranProcedure := builder
-		                    newClassNamed: #Procedure
-		                    comment:
-		                    'I represent a fortran subroutine or a function'
 ]
