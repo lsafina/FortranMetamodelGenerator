@@ -93,7 +93,19 @@ Class {
 		'integerType',
 		'logicalType',
 		'realType',
-		'exitStatement'
+		'exitStatement',
+		'doubleComplexConstant',
+		'doublePrecisionConstant',
+		'integerConstant',
+		'realConstant',
+		'tWithFormatIdentifier',
+		'tFormatIdentifier',
+		'asterisk',
+		'tWithIOList',
+		'tIOListMember',
+		'ampersand',
+		'tAssigneable',
+		'tWithAssigneable'
 	],
 	#category : #'FAST-Fortran-Generator'
 }
@@ -266,7 +278,7 @@ FASTFortranGenerator >> defineData [
 		                   comment: 'I represent Fortran Literal (Constant) statement'."
 
 	arithmeticConstant := builder
-		                      newClassNamed: #ConstantArithmetic
+		                      newClassNamed: #ArithmeticLiteral
 		                      comment:
 		                      'I represent Fortran Arithmetic Literal (Constant) statement'.
 
@@ -274,6 +286,16 @@ FASTFortranGenerator >> defineData [
 		                            newClassNamed: #CharacterLiteral
 		                            comment:
 		                            'I represent Fortran Character Literal (Constant) statement'."
+		
+	asterisk  := builder
+		                            newClassNamed: #Asterisk
+		                            comment:
+		                            'I represent an Asterisk Character Literal (Constant) that is often used as a format identifier'.
+
+	ampersand  := builder
+		                            newClassNamed: #Ampersand
+		                            comment:
+		                            'I represent an Ampersand Character Literal (Constant) that is often used in parameters and format identifiers'.
 
 	"booleanLiteral := builder
 		                          newClassNamed: #BooleanLiteral
@@ -285,7 +307,26 @@ FASTFortranGenerator >> defineData [
 		                   comment:
 		                   'I represent Fortran Arithmetic Complex Literal (Constant) statement'.
 
+	doubleComplexConstant := builder
+		                   newClassNamed: #DoubleComplexLiteral
+		                   comment:
+		                   'I represent Fortran Arithmetic Double Complex Literal (Constant) statement'.
 
+	doublePrecisionConstant := builder
+		                   newClassNamed: #DoublePrecisionLiteral
+		                   comment:
+		                   'I represent Fortran Arithmetic Double Precision Literal (Constant) statement'.
+
+	integerConstant := builder
+		                   newClassNamed: #IntegerLiteral
+		                   comment:
+		                   'I represent Fortran Arithmetic Integer Literal (Constant) statement'.	
+			
+	realConstant := builder
+		                   newClassNamed: #RealLiteral
+		                   comment:
+		                   'I represent Fortran Arithmetic Real Literal (Constant) statement'.
+	
 	"TYPES"
  
 	type := builder
@@ -356,7 +397,7 @@ FASTFortranGenerator >> defineHierarchy [
 	subroutine --|> procedure.
 
 	"other entities"
-	comment --|> entity.
+	comment --|> scopableEntity.
 
 	"STATEMENTS"
 	acceptStatement --|> statement.
@@ -415,25 +456,34 @@ FASTFortranGenerator >> defineHierarchy [
 	virtualStatement --|> statement.
 	volatileStatement --|> statement.
 	writeStatement --|> statement.
-	
+	"STATEMENT OUT OF STANDARD"
+	exitStatement --|> statement.
 	
 	"DATA"
+	expression --|> scopableEntity.
 	arithmeticExpression --|> expression.
 	characterExpression --|> expression.
 	logicalExpression --|> expression.
 	loopControlExpression --|> expression.
 	
-	array --|> entity.
+	array --|> expression.
 	arrayDimensionDeclarator --|> array.
-	substring --|> entity.
-	pointer --|> entity.
-	record --|> entity.
+	substring --|> expression.
+	pointer --|> expression.
+	record --|> expression.
 	recordField --|> record.
-	structure --|> entity.
-	arithmeticConstant --|> literal.
-	complexConstant --|> literal.
+	structure --|> expression.
 	
-	type --|> entity.
+	arithmeticConstant --|> literal.
+	complexConstant --|> arithmeticConstant.
+	doubleComplexConstant --|> arithmeticConstant.
+	doublePrecisionConstant --|> arithmeticConstant.
+	integerConstant --|> arithmeticConstant.
+	realConstant  --|> arithmeticConstant.
+	asterisk --|> characterLiteral.
+	ampersand --|> characterLiteral. 
+	
+	type --|> scopableEntity.
 	byteType --|> type.
 	characterType --|> type.
 	complexType --|> type.
@@ -445,11 +495,31 @@ FASTFortranGenerator >> defineHierarchy [
 	
 	"TRAITS"
 	subroutine --|> tWithParameters.
-	
 	"TODO: an asterisk, or an ampersand can be a subroutine parameter as well"
+	asterisk --|> tParameter. 
 	array --|> tParameter.
 	record --|> tParameter.
-	procedure --|> tParameter.    
+	procedure --|> tParameter.  
+	
+	callStatement --|> tWithArguments.
+	expression --|> tArgument. 
+	subroutine --|> tArgument.
+	"TODO: also as an argument may serve 
+		- an intrinsic function permitted to be passed as an argument
+		- an external function name
+		- an alternate return specifier, * or &,followed by a statement number."
+	
+	printStatement --|> tWithFormatIdentifier.
+	formatStatement --|> tFormatIdentifier.
+	asterisk --|> tFormatIdentifier.
+	
+	writeStatement --|> tWithIOList.
+	printStatement --|> tWithIOList.
+	expression --|> tIOListMember.
+	
+	assignmentStatement --|> tWithAssigneable.
+	expression --|> tAssigneable. 
+	 
 	
 ]
 
@@ -504,9 +574,15 @@ FASTFortranGenerator >> defineProperties [
 
 	(comment property: #content type: #String) comment:
 		'Determines a content of a comment'.
+	
+	(returnStatement property: #alternateReturnLable type: #String) comment:
+		'Optional. Expression of type INTEGER or REAL'.
+
+	(stopStatement property: #displayArgument type: #String) comment:
+		'Optional. Displayed when the program stops. String of no more that 5 digits or a character constant'.
 
 	(writeStatement property: #format type: #String) comment:
-		'Format identifier. '.
+		'Format identifier. '.	
 		
 	(loopControlExpression property: #init type: #String) comment:
 		'Loop control initial value'.
@@ -522,17 +598,17 @@ FASTFortranGenerator >> defineProperties [
 FASTFortranGenerator >> defineRelations [
 
 	super defineRelations.
-	
+
 	((programUnit property: #statements) comment:
 		 'Statements of the program unit ')
-	<>-* ((statement property: #parentProgramUnit) comment:
+	<>-* ((scopableEntity property: #parentProgramUnit) comment:
 			 'Parent program unit').
-			
+
 	((logicalExpression property: #left) comment:
 		 'left part of the expression')
 	<>- ((expression property: #logicalExpressionLeftPart) comment:
 			 'Parent expression (if possible)').
-			
+
 	((logicalExpression property: #right) comment:
 		 'left part of the expression')
 	<>- ((expression property: #logicalExpressionLeftPart) comment:
@@ -542,19 +618,31 @@ FASTFortranGenerator >> defineRelations [
 		 'left part of the expression')
 	<>- ((expression property: #logicalExpressionLeftPart) comment:
 			 'Parent expression (if possible)').
-			
+
 	((arithmeticExpression property: #right) comment:
 		 'left part of the expression')
 	<>- ((expression property: #logicalExpressionLeftPart) comment:
-			 'Parent expression (if possible)').	
-				
-	((doStatement property: #loopControl) comment:
-		 'loop control')
-	<>- ((loopControlExpression property: #parentLoop) comment:
-			 'Parent loop').	
+			 'Parent expression (if possible)').
 
-	
-	
+	((doStatement property: #loopControl) comment: 'loop control')
+	<>-
+	((loopControlExpression property: #parentLoop) comment: 'Parent loop').
+
+
+	"TRAITS"
+	((tWithFormatIdentifier property: #format) comment:
+		 'format identifier')
+	<>- ((tFormatIdentifier property: #formatParentStatement) comment:
+			 'The owner of the format identifier').
+	((tWithIOList property: #iolist) comment: 'iolist')
+	<>-* ((tIOListMember property: #iolistParentStatement) comment:
+			 'The owner of the iolist').
+
+	((tWithAssigneable property: #variable) comment: 'My variable')
+	<>- ((tAssigneable property: #variableAssignementOwner) comment:
+			 'The owner of the modifier').
+	((assignmentStatement property: #expression) comment: 'Expression thats being assigned upon declaration to the var')
+		<>- ((expression property: #assignementExpressionOwner) comment: 'The AssignementExpression owner (if possible)').
 ]
 
 { #category : #'private - definition' }
@@ -812,6 +900,15 @@ FASTFortranGenerator >> defineStatements [
 FASTFortranGenerator >> defineTraits [
 
 	super defineTraits.
+	
+	tWithFormatIdentifier := builder newTraitNamed: #TWithFormatIdentifier comment: 'I represent a statement with format identifier (print, write, ...)'.
+	tFormatIdentifier := builder newTraitNamed: #TFormatIdentifier comment: 'I represent a format identifier'.
 
+	tWithIOList := builder newTraitNamed: #TWithIOList comment: 'I represent a statement with iolist (print, write, ...)'.
+
+	tIOListMember := builder newTraitNamed: #TIOListMember comment: 'I represent an item that can be encountered in the iolist of certain statments (print)'.
+	
+	tAssigneable := builder newTraitNamed: #TAssigneable comment: 'assignable entity'. 
+	tWithAssigneable := builder newTraitNamed: #TWithAssigneable comment: 'I have an assigneable'.
 	
 ]
