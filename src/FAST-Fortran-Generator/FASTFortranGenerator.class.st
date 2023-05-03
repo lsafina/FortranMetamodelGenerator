@@ -105,7 +105,10 @@ Class {
 		'tIOListMember',
 		'ampersand',
 		'tAssigneable',
-		'tWithAssigneable'
+		'tWithAssigneable',
+		'tBinaryExpression',
+		'variableDeclaration',
+		'functionStatement'
 	],
 	#category : #'FAST-Fortran-Generator'
 }
@@ -213,6 +216,9 @@ FASTFortranGenerator >> defineClasses [
 
 { #category : #'private - definition' }
 FASTFortranGenerator >> defineData [
+
+	variableDeclaration := builder newClassNamed: #VariablesDeclaration
+		comment: 'I represent a declaration statement for one or many variables'.
 
 	"EXPRESSIONS"
 
@@ -398,6 +404,7 @@ FASTFortranGenerator >> defineHierarchy [
 
 	"other entities"
 	comment --|> scopableEntity.
+	variableDeclaration --|> scopableEntity.
 
 	"STATEMENTS"
 	acceptStatement --|> statement.
@@ -428,6 +435,7 @@ FASTFortranGenerator >> defineHierarchy [
 	equivalenceStatement --|> statement.
 	externalStatement --|> statement.
 	formatStatement --|> statement.
+	functionStatement --|> statement.
 	goToStatement --|> statement.
 	goToAssignedStatement --|> statement.
 	goToComputed --|> statement.
@@ -499,9 +507,14 @@ FASTFortranGenerator >> defineHierarchy [
 	asterisk --|> tParameter. 
 	array --|> tParameter.
 	record --|> tParameter.
-	procedure --|> tParameter.  
+	procedure --|> tParameter.
+	"TODO: check if a function and a subroutine has the same set of parameters and join the definiton to procedure --|> tWithParameters in this case."
+	function --|> tWithParameters.
+	  
 	
+	functionStatement --|> tWithArguments. 
 	callStatement --|> tWithArguments.
+	callStatement --|> tArgument. "not sure if this is right"
 	expression --|> tArgument. 
 	subroutine --|> tArgument.
 	"TODO: also as an argument may serve 
@@ -516,10 +529,14 @@ FASTFortranGenerator >> defineHierarchy [
 	writeStatement --|> tWithIOList.
 	printStatement --|> tWithIOList.
 	expression --|> tIOListMember.
+	callStatement --|> tIOListMember. 
 	
 	assignmentStatement --|> tWithAssigneable.
-	expression --|> tAssigneable. 
-	 
+	expression --|> tAssigneable.
+	callStatement --|> tAssigneable. 
+	
+	logicalExpression --|> tBinaryExpression.
+	arithmeticExpression --|> tBinaryExpression.  
 	
 ]
 
@@ -530,15 +547,6 @@ FASTFortranGenerator >> defineProperties [
 
 	(programUnit property: #name type: #String) comment:
 		'Symbolic name of a program unit'.
-
-	"(mainprogram property: #name type: #String) comment:
-		'Symbolic name of the main program'.
-	(function property: #name type: #String) comment:
-		'Name of subroutine subprogram'.
-	(subroutine property: #name type: #String) comment:
-		'Name of subroutine subprogram'.
-	(blockData property: #name type: #String) comment:
-		'Symbolic name of the block data subprogram in which the BLOCK DATA statement appears. This parameter is optional. It is a global name.'."
 
 	(statement property: #label type: #String) comment:
 		'Determines the statement label which consists of 1 to 5 digits, with at least one nonzero'.
@@ -562,7 +570,7 @@ FASTFortranGenerator >> defineProperties [
 	(variableExpression property: #defined type: #Boolean) comment:
 		'Determines if the variableis defined (stores a value)'.
 
-	"arrays"
+
 	(array property: #name type: #String) comment:
 		'Determines the array name'.
 
@@ -572,8 +580,11 @@ FASTFortranGenerator >> defineProperties [
 	(callStatement property: #name type: #String) comment:
 		'Name of a callling entity'.
 
+	(functionStatement property: #name type: #String) comment:
+		'Name of a function statement'.
+	
 	(comment property: #content type: #String) comment:
-		'Determines a content of a comment'.
+		'Determines a content of a comment'.		
 	
 	(returnStatement property: #alternateReturnLable type: #String) comment:
 		'Optional. Expression of type INTEGER or REAL'.
@@ -592,6 +603,10 @@ FASTFortranGenerator >> defineProperties [
 		
 	(loopControlExpression property: #limit type: #String) comment:
 		'Loop control limit value'.
+		
+	"TARITS"
+	(tBinaryExpression property: #operator type: #String) comment:
+		'Operator of a binary expression'.
 ]
 
 { #category : #definition }
@@ -606,27 +621,31 @@ FASTFortranGenerator >> defineRelations [
 
 	((logicalExpression property: #left) comment:
 		 'left part of the expression')
-	<>- ((expression property: #logicalExpressionLeftPart) comment:
+	<>- ((tAssigneable property: #parentExpression) comment:
 			 'Parent expression (if possible)').
 
 	((logicalExpression property: #right) comment:
 		 'left part of the expression')
-	<>- ((expression property: #logicalExpressionLeftPart) comment:
+	<>- ((tAssigneable property: #parentExpression) comment:
 			 'Parent expression (if possible)').
 
 	((arithmeticExpression property: #left) comment:
 		 'left part of the expression')
-	<>- ((expression property: #logicalExpressionLeftPart) comment:
+	<>- ((expression property: #parentExpression) comment:
 			 'Parent expression (if possible)').
 
 	((arithmeticExpression property: #right) comment:
 		 'left part of the expression')
-	<>- ((expression property: #logicalExpressionLeftPart) comment:
+	<>- ((expression property: #parentExpression) comment:
 			 'Parent expression (if possible)').
 
 	((doStatement property: #loopControl) comment: 'loop control')
 	<>-
 	((loopControlExpression property: #parentLoop) comment: 'Parent loop').
+	
+	((variableDeclaration property: #variables) comment: 'variables')
+	<>-*
+	((variableExpression property: #parentDeclaration) comment: 'Parent declaration').
 
 
 	"TRAITS"
@@ -641,8 +660,12 @@ FASTFortranGenerator >> defineRelations [
 	((tWithAssigneable property: #variable) comment: 'My variable')
 	<>- ((tAssigneable property: #variableAssignementOwner) comment:
 			 'The owner of the modifier').
+			
 	((assignmentStatement property: #expression) comment: 'Expression thats being assigned upon declaration to the var')
-		<>- ((expression property: #assignementExpressionOwner) comment: 'The AssignementExpression owner (if possible)').
+		<>- ((tAssigneable property: #assignementExpressionOwner) comment: 'The AssignementExpression owner (if possible)').
+		
+	((functionStatement property: #expression) comment: 'Expression thats being assigned upon declaration to the var')
+		<>- ((tAssigneable property: #assignementExpressionOwner) comment: 'The AssignementExpression owner (if possible)').
 ]
 
 { #category : #'private - definition' }
@@ -651,249 +674,218 @@ FASTFortranGenerator >> defineStatements [
 	"A statement consists of zero or more key words, symbolic names, literal constants, statement labels, operators, and special characters."
 
 	acceptStatement := builder
-		                          newClassNamed: #AcceptStatement
-		                          comment:
-		                          'I represent Fortran accept statement'.
-	
+		                   newClassNamed: #AcceptStatement
+		                   comment: 'I represent Fortran accept statement'.
+
 	assignStatement := builder
-		                          newClassNamed: #AssignStatement
-		                          comment:
-		                          'I represent Fortran ASSIGN statement'.
-		
+		                   newClassNamed: #AssignStatement
+		                   comment: 'I represent Fortran ASSIGN statement'.
+
 	assignmentStatement := builder
-		                          newClassNamed: #AssignmentStatement
-		                          comment:
-		                          'I represent Fortran assignment made without ASSIGN statement'.	
-		
+		                       newClassNamed: #AssignmentStatement
+		                       comment:
+		                       'I represent Fortran assignment made without ASSIGN statement'.
+
 	automaticStatement := builder
-		                             newClassNamed: #AutomaticStatement
-		                             comment:
-		                             'I represent Fortran Automatic statement'.
+		                      newClassNamed: #AutomaticStatement
+		                      comment:
+		                      'I represent Fortran Automatic statement'.
 	backspaceStatement := builder
-		                             newClassNamed: #BackspaceStatement
-		                             comment:
-		                             'I represent Fortran Backspace statement'.
+		                      newClassNamed: #BackspaceStatement
+		                      comment:
+		                      'I represent Fortran Backspace statement'.
 	callStatement := builder
-		                        newClassNamed: #CallStatement
-		                        comment:
-		                        'I represent Fortran Call statement'.
+		                 newClassNamed: #CallStatement
+		                 comment: 'I represent Fortran Call statement'.
 	closeStatement := builder
-		                         newClassNamed: #CloseStatement
-		                         comment:
-		                         'I represent Fortran Close statement'.
+		                  newClassNamed: #CloseStatement
+		                  comment: 'I represent Fortran Close statement'.
 	commonStatement := builder
-		                          newClassNamed: #CommonStatement
-		                          comment:
-		                          'I represent Fortran Common statement'.
+		                   newClassNamed: #CommonStatement
+		                   comment: 'I represent Fortran Common statement'.
 	continueStatement := builder
-		                            newClassNamed: #ContinueStatement
-		                            comment:
-		                            'I represent Fortran Continue statement'.
+		                     newClassNamed: #ContinueStatement
+		                     comment:
+		                     'I represent Fortran Continue statement'.
 	dataStatement := builder
-		                        newClassNamed: #DataStatement
-		                        comment: 'I represent FortranData statement'.
+		                 newClassNamed: #DataStatement
+		                 comment: 'I represent FortranData statement'.
 	decodeStatement := builder
-		                          newClassNamed: #DecodeStatement
-		                          comment:
-		                          'I represent Fortran Decode statement'.
+		                   newClassNamed: #DecodeStatement
+		                   comment: 'I represent Fortran Decode statement'.
 	encodeStatement := builder
-		                          newClassNamed: #EncodeStatement
-		                          comment:
-		                          'I represent Fortran Encode statement'.
+		                   newClassNamed: #EncodeStatement
+		                   comment: 'I represent Fortran Encode statement'.
 	dimensionStatement := builder
-		                             newClassNamed: #DimensionStatement
-		                             comment:
-		                             'I represent FortranDimension statement'.
+		                      newClassNamed: #DimensionStatement
+		                      comment:
+		                      'I represent FortranDimension statement'.
 	doStatement := builder
-		                      newClassNamed: #DoStatement
-		                      comment: 'I represent Fortran Do statement'.
+		               newClassNamed: #DoStatement
+		               comment: 'I represent Fortran Do statement'.
 	doWhileStatement := builder
-		                           newClassNamed: #DoWhileStatement
-		                           comment:
-		                           'I represent Fortran Do While statement'.
+		                    newClassNamed: #DoWhileStatement
+		                    comment:
+		                    'I represent Fortran Do While statement'.
 	elseStatement := builder
-		                        newClassNamed: #ElseStatement
-		                        comment:
-		                        'I represent Fortran Else statement'.
+		                 newClassNamed: #ElseStatement
+		                 comment: 'I represent Fortran Else statement'.
 	elseIfStatement := builder
-		                          newClassNamed: #ElseIfStatement
-		                          comment:
-		                          'I represent Fortran Else If statement'.
+		                   newClassNamed: #ElseIfStatement
+		                   comment: 'I represent Fortran Else If statement'.
 	endStatement := builder
-		                       newClassNamed: #EndStatement
-		                       comment: 'I represent Fortran End statement'.
+		                newClassNamed: #EndStatement
+		                comment: 'I represent Fortran End statement'.
 	endDoStatement := builder
-		                         newClassNamed: #EndDoStatement
-		                         comment:
-		                         'I represent Fortran End Do or ENDDO statement'.
+		                  newClassNamed: #EndDoStatement
+		                  comment:
+		                  'I represent Fortran End Do or ENDDO statement'.
 	endFileStatement := builder
-		                           newClassNamed: #EndFileStatement
-		                           comment:
-		                           'I represent Fortran End File statement'.
+		                    newClassNamed: #EndFileStatement
+		                    comment:
+		                    'I represent Fortran End File statement'.
 	endIfStatement := builder
-		                         newClassNamed: #EndIfStatement
-		                         comment:
-		                         'I represent Fortran End If statement'.
+		                  newClassNamed: #EndIfStatement
+		                  comment: 'I represent Fortran End If statement'.
 	endMapStatement := builder
-		                          newClassNamed: #EndMapStatement
-		                          comment:
-		                          'I represent Fortran End Map statement'.
+		                   newClassNamed: #EndMapStatement
+		                   comment: 'I represent Fortran End Map statement'.
 	endStructureStatement := builder
-		                                newClassNamed:
-		                                #EndStructureStatement
-		                                comment:
-		                                'I represent Fortran End Structure statement'.
-	endUnionStatement := builder
-		                            newClassNamed: #EndUnionStatement
-		                            comment:
-		                            'I represent Fortran End Union statement'.
-	entryStatement := builder
-		                         newClassNamed: #EntryStatement
+		                         newClassNamed: #EndStructureStatement
 		                         comment:
-		                         'I represent Fortran Entry statement'.
+		                         'I represent Fortran End Structure statement'.
+	endUnionStatement := builder
+		                     newClassNamed: #EndUnionStatement
+		                     comment:
+		                     'I represent Fortran End Union statement'.
+	entryStatement := builder
+		                  newClassNamed: #EntryStatement
+		                  comment: 'I represent Fortran Entry statement'.
 	equivalenceStatement := builder
-		                               newClassNamed: #EquivalenceStatement
-		                               comment:
-		                               'I represent Fortran Equivalence statement'.
+		                        newClassNamed: #EquivalenceStatement
+		                        comment:
+		                        'I represent Fortran Equivalence statement'.
 	externalStatement := builder
-		                            newClassNamed: #ExternalStatement
-		                            comment:
-		                            'I represent Fortran External statement'.
+		                     newClassNamed: #ExternalStatement
+		                     comment:
+		                     'I represent Fortran External statement'.
 	formatStatement := builder
-		                          newClassNamed: #FormatStatement
-		                          comment:
-		                          'I represent Fortran Format statement'.
+		                   newClassNamed: #FormatStatement
+		                   comment: 'I represent Fortran Format statement'.
+
+	functionStatement := builder
+		                     newClassNamed: #FunctionStatement
+		                     comment:
+		                     'I represent a function statement - a function-like declaration, made in a single statement'.
 
 	goToStatement := builder
-		                        newClassNamed: #GoToStatement
-		                        comment:
-		                        'I represent Fortran Go To statement'.
-		
+		                 newClassNamed: #GoToStatement
+		                 comment: 'I represent Fortran Go To statement'.
+
 	goToAssignedStatement := builder
-		                                newClassNamed:
-		                                #GoToAssignedStatement
-		                                comment:
-		                                'I represent Fortran Go To( Assigned) statement'.
+		                         newClassNamed: #GoToAssignedStatement
+		                         comment:
+		                         'I represent Fortran Go To( Assigned) statement'.
 	goToComputed := builder
-		                                newClassNamed:
-		                                #GoToComputedStatement
-		                                comment:
-		                                'I represent Fortran Go To (Computed) statement'.
+		                newClassNamed: #GoToComputedStatement
+		                comment:
+		                'I represent Fortran Go To (Computed) statement'.
 	goToUnconditional := builder
-		                                     newClassNamed:
-		                                     #GoToUnconditionalStatement
-		                                     comment:
-		                                     'I represent Fortran Go To (Unconditional) statement'.
+		                     newClassNamed: #GoToUnconditionalStatement
+		                     comment:
+		                     'I represent Fortran Go To (Unconditional) statement'.
 	ifArithmeticStatement := builder
-		                                newClassNamed:
-		                                #IfArithmeticStatement
-		                                comment:
-		                                'I represent Fortran If (Arithmetic) statement'.
+		                         newClassNamed: #IfArithmeticStatement
+		                         comment:
+		                         'I represent Fortran If (Arithmetic) statement'.
 	ifBlockStatement := builder
-		                           newClassNamed: #IfBlockStatement
-		                           comment:
-		                           'I represent Fortran If (BLock) statement'.
+		                    newClassNamed: #IfBlockStatement
+		                    comment:
+		                    'I represent Fortran If (BLock) statement'.
 	ifLogicalStatement := builder
-		                             newClassNamed: #IfLogicalStatement
-		                             comment:
-		                             'I represent Fortran If (Logical) statement'.
+		                      newClassNamed: #IfLogicalStatement
+		                      comment:
+		                      'I represent Fortran If (Logical) statement'.
 	implicitStatement := builder
-		                            newClassNamed: #ImplicitStatement
-		                            comment:
-		                            'I represent Fortran Implicit statement'.
+		                     newClassNamed: #ImplicitStatement
+		                     comment:
+		                     'I represent Fortran Implicit statement'.
 	includeStatement := builder
-		                           newClassNamed: #IncludeStatement
-		                           comment:
-		                           'I represent Fortran Include statement'.
+		                    newClassNamed: #IncludeStatement
+		                    comment: 'I represent Fortran Include statement'.
 	inquireStatement := builder
-		                           newClassNamed: #InquireStatement
-		                           comment:
-		                           'I represent Fortran Inquire statement'.
+		                    newClassNamed: #InquireStatement
+		                    comment: 'I represent Fortran Inquire statement'.
 	intrinsicStatement := builder
-		                             newClassNamed: #IntrinsicStatement
-		                             comment:
-		                             'I represent Fortran Intrinsic statement'.
+		                      newClassNamed: #IntrinsicStatement
+		                      comment:
+		                      'I represent Fortran Intrinsic statement'.
 	mapStatement := builder
-		                       newClassNamed: #MapStatement
-		                       comment: 'I represent Fortran Map statement'.
+		                newClassNamed: #MapStatement
+		                comment: 'I represent Fortran Map statement'.
 	nameListStatement := builder
-		                            newClassNamed: #NameListStatement
-		                            comment:
-		                            'I represent Fortran NameList statement'.
+		                     newClassNamed: #NameListStatement
+		                     comment:
+		                     'I represent Fortran NameList statement'.
 	openStatement := builder
-		                        newClassNamed: #OpenStatement
-		                        comment:
-		                        'I represent Fortran Open statement'.
+		                 newClassNamed: #OpenStatement
+		                 comment: 'I represent Fortran Open statement'.
 	optionsStatement := builder
-		                           newClassNamed: #OptionsStatement
-		                           comment:
-		                           'I represent Fortran Options statement'.
+		                    newClassNamed: #OptionsStatement
+		                    comment: 'I represent Fortran Options statement'.
 	parameterStatement := builder
-		                             newClassNamed: #ParameterStatement
-		                             comment:
-		                             'I represent Fortran Parameter statement'.
+		                      newClassNamed: #ParameterStatement
+		                      comment:
+		                      'I represent Fortran Parameter statement'.
 	pauseStatement := builder
-		                         newClassNamed: #PauseStatement
-		                         comment:
-		                         'I represent Fortran Pause statement'.
+		                  newClassNamed: #PauseStatement
+		                  comment: 'I represent Fortran Pause statement'.
 	pragmaStatement := builder
-		                          newClassNamed: #PragmaStatement
-		                          comment:
-		                          'I represent Fortran Pragma statement'.
+		                   newClassNamed: #PragmaStatement
+		                   comment: 'I represent Fortran Pragma statement'.
 	printStatement := builder
-		                         newClassNamed: #PrintStatement
-		                         comment:
-		                         'I represent Fortran Print statement'.
-	
+		                  newClassNamed: #PrintStatement
+		                  comment: 'I represent Fortran Print statement'.
+
 	readStatement := builder
-		                        newClassNamed: #ReadStatement
-		                        comment:
-		                        'I represent Fortran Read statement'.
-	"defined globally"	
+		                 newClassNamed: #ReadStatement
+		                 comment: 'I represent Fortran Read statement'.
+	"defined globally"
 	"statementReturn := builder
 		                          newClassNamed: #StatementReturn
 		                          comment:
 		                          'I represent Fortran Return statement'."
 	rewindStatement := builder
-		                          newClassNamed: #RewindStatement
-		                          comment:
-		                          'I represent Fortran Rewind statement'.
+		                   newClassNamed: #RewindStatement
+		                   comment: 'I represent Fortran Rewind statement'.
 	saveStatement := builder
-		                        newClassNamed: #SaveStatement
-		                        comment:
-		                        'I represent Fortran Save statement'.
-	
+		                 newClassNamed: #SaveStatement
+		                 comment: 'I represent Fortran Save statement'.
+
 	staticStatement := builder
-		                          newClassNamed: #StaticStatement
-		                          comment:
-		                          'I represent Fortran Static statement'.
+		                   newClassNamed: #StaticStatement
+		                   comment: 'I represent Fortran Static statement'.
 	stopStatement := builder
-		                        newClassNamed: #StopStatement
-		                        comment:
-		                        'I represent Fortran Stop statement'.
+		                 newClassNamed: #StopStatement
+		                 comment: 'I represent Fortran Stop statement'.
 	unionStatement := builder
-		                         newClassNamed: #UnionStatement
-		                         comment:
-		                         'I represent Fortran Union statement'.
+		                  newClassNamed: #UnionStatement
+		                  comment: 'I represent Fortran Union statement'.
 	virtualStatement := builder
-		                           newClassNamed: #VirtualStatement
-		                           comment:
-		                           'I represent Fortran Virtual statement'.
+		                    newClassNamed: #VirtualStatement
+		                    comment: 'I represent Fortran Virtual statement'.
 	volatileStatement := builder
-		                            newClassNamed: #volatileStatement
-		                            comment:
-		                            'I represent Fortran Volatile statement'.
+		                     newClassNamed: #volatileStatement
+		                     comment:
+		                     'I represent Fortran Volatile statement'.
 	writeStatement := builder
-		                         newClassNamed: #WriteStatement
-		                         comment:
-		
-		                         'I represent Fortran Write statement'.
-		
+		                  newClassNamed: #WriteStatement
+		                  comment: 'I represent Fortran Write statement'.
+
 	"NOT IN THE 77 STANDARD"
 	exitStatement := builder
-		                         newClassNamed: #ExitStatement
-		                         comment:
-		                         'I represent Fortran90 Exit statement'.
+		                 newClassNamed: #ExitStatement
+		                 comment: 'I represent Fortran90 Exit statement'
 ]
 
 { #category : #definition }
@@ -909,6 +901,9 @@ FASTFortranGenerator >> defineTraits [
 	tIOListMember := builder newTraitNamed: #TIOListMember comment: 'I represent an item that can be encountered in the iolist of certain statments (print)'.
 	
 	tAssigneable := builder newTraitNamed: #TAssigneable comment: 'assignable entity'. 
+	
 	tWithAssigneable := builder newTraitNamed: #TWithAssigneable comment: 'I have an assigneable'.
+	
+	tBinaryExpression  := builder newTraitNamed: #TBinaryExpression comment: 'I represent a binary expression'.
 	
 ]
